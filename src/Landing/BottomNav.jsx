@@ -38,7 +38,7 @@ const styles = {
     backgroundColor: "whitesmoke",
     boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
     zIndex:"99",
-    
+    borderTop:"solid orange 1px"
   },
   button: {
     backgroundColor: "#282c34",
@@ -47,7 +47,8 @@ const styles = {
     borderRadius: "5px",
     padding: "10px 20px",
     cursor: "pointer",
-    width:"45px"
+    width:"45px",
+    boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
   },
   contBut:{
     display:"flex",

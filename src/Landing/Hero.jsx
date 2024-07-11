@@ -48,11 +48,11 @@ const Hero = () => {
     >
     <Img src={carne} width="15%" margin="auto" style={{  filter:" drop-shadow(5px 5px 10px #000000)",}}/>
     </Heading>
-          <Text fontSize="xl" mb="6" >
+          <Text fontSize="xl" mb="6" color={"#F28A2E"} fontWeight={600}>
            Servicio de la mejor calidad
           </Text>
           <Button style={{backgroundColor:"#FFBB10", border:"solid #2E1F13 4px", borderRadius:"12px"}} size="lg" leftIcon={""} onClick={openModal}>
-            Hacer Reserva
+            Ir a Catalogo !
           </Button>
           <Text fontSize="l" mb="6">
           Provincia | Direccion | Telefono 

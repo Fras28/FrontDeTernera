@@ -48,13 +48,7 @@ const Categorias = () => {
 const styles = {
   container: {
     width: "100vw",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    // backgroundImage: `url(${bgImg})`, 
-    gap: "1rem",
-    padding: "10px",
     justifyItems: "center",
-    padding:"1.5rem"
   },
   container2: {
     width: "100vw",
@@ -65,9 +59,8 @@ const styles = {
     backgroundRepeat:"no-repeat",
     filter: "drop-shadow(5px 5px 10px #000000)",
     gap: "1rem",
-    padding: "10px",
     justifyItems: "center",
-    padding:"1.5rem"
+    padding:"1.5rem",
   },
   card: {
     width: "100%",

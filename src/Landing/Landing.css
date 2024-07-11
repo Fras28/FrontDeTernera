@@ -188,5 +188,9 @@
     .hero-container {
       background-attachment: scroll;
     }
+    .react-parallax-content{
+      height: auto;
+    
+    }
   }
   
