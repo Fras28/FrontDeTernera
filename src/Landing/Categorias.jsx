@@ -5,7 +5,10 @@ import cerdo from "../assets/cerdo.jpeg";
 import oferta from "../assets/oferta.jpeg"
 import bgImg from "../assets/BackPoulet.png"
 import logo from "../assets/LogoDeTernera.png"
-import { border } from "@chakra-ui/react";
+import { background, border, Button } from "@chakra-ui/react";
+import { color } from "framer-motion";
+import { height, width } from "@fortawesome/free-solid-svg-icons/fa0";
+import { text } from "@fortawesome/fontawesome-svg-core";
 
 const Categorias = () => {
   // Array de categorías con información de imagen y título
@@ -34,10 +37,11 @@ const Categorias = () => {
 
   return (
     <div style={styles.container}>
+      <h2 style={styles.titSection}>Nuestras categorías</h2>
       <div style={styles.container2}>
       {categorias.map((categoria, index) => (
         <div key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${categoria.imagen})` }}>
-          <h3 style={styles.title}>{categoria.titulo}</h3>
+        <Button style={styles.Button}><h3 style={styles.title}>{categoria.titulo}</h3></Button>  
         </div>
       ))}
       </div>
@@ -47,20 +51,19 @@ const Categorias = () => {
 
 const styles = {
   container: {
-    width: "100vw",
     justifyItems: "center",
+    marginBottom:"2rem"
   },
   container2: {
-    width: "100vw",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    display: "flex",
+    flexDirection:"column",
     backgroundImage: `url(${logo})`, 
     backgroundPosition:"center",
     backgroundRepeat:"no-repeat",
     filter: "drop-shadow(5px 5px 10px #000000)",
     gap: "1rem",
     justifyItems: "center",
-    padding:"1.5rem",
+  
   },
   card: {
     width: "100%",
@@ -70,18 +73,32 @@ const styles = {
     backgroundPosition: "center",
     position: "relative",
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "center",
     color: "white",
     fontSize: "1.5rem",
     fontWeight: "bold",
     textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
-    borderRadius:"12px",
-    boxShadow: "rgba(6, 24, 44, 0.4) 0px 0px 0px 2px, rgba(6, 24, 44, 0.65) 0px 4px 6px -1px, rgba(255, 255, 255, 0.08) 0px 1px 0px inset",
+    borderRadius:"24px",
+    padding:".5rem"
   },
   title: {
-    textAlign: "center",
+    textAlign: "flex-end",
   },
+  Button:{
+    background:"black",
+    color:"white",
+    borderRadius:"24px",
+    width:"100%",
+    height:"46px"
+  },
+titSection:{
+  display:"flex",
+  fontWeight:"500",
+  width:"100%",
+  fontSize:"32px",
+  padding:".5rem"
+}
 };
 
 export default Categorias;

@@ -41,7 +41,7 @@ const Carousel = () => {
 
 const styles = {
   container: {
-    minWidth: "100vw",
+    minWidth: "103%",
     display: "flex",
     overflowX: "auto",
     gap: "1rem",
