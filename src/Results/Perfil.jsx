@@ -41,7 +41,7 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
       justifyContent={"flex-start"}
       gap={"1.5rem"}
       >
-    <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"}  showBackButton={true}/>
+    <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"}  />
         <Button as={NavLink} to={"/PersonalData"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Datos personales {Arrow}</Button>
         <Button as={NavLink} to={"/HistorialPedidos"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Pedidos {Arrow}</Button>
     </Flex>
