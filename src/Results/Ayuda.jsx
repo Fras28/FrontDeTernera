@@ -25,6 +25,7 @@ export default function Ayuda() {
       gap={"2rem"}
     >
       <BlackBox
+       showBackButton={true}
         titulo={"Ayuda"}
         info={
           "En esta sección vas a encontrar la respuesta a las dudas más frecuentes"
