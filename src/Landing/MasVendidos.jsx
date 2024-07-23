@@ -1,39 +1,68 @@
-import React from "react";
-import { Box, Heading, Flex, Icon } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
+import React, { useRef, useState } from "react";
+import { Box, Heading, Flex, Icon, Button } from "@chakra-ui/react";
+import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
 import ProductSimple from "./cardProd";
 import 'animate.css';
 
 const Carousel = () => {
+  const scrollRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const scroll = (scrollOffset) => {
+    scrollRef.current.scrollLeft += scrollOffset;
+    updateArrowVisibility();
+  };
+
+  const updateArrowVisibility = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
   return (
-    <Box>
+    <Box position="relative" maxW={"100dvw"}>
       <Heading style={styles.h1}>LOS MAS VENDIDOS</Heading>
-      <Flex style={styles.container}>
-        <Icon as={ArrowForwardIcon} boxSize={6} color="grey.500" style={styles.icon} />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
-        <ProductSimple className="animate__animated animate__backInUp" />
+      <Flex position="relative">
+        {showLeftArrow && (
+          <Button
+            onClick={() => scroll(-200)}
+            position="absolute"
+            left="-.5rem"
+            top="50%"
+            transform="translateY(-50%)"
+            zIndex="1"
+            bg="white"
+            _hover={{ bg: "gray.100" }}
+          >
+            <Icon as={ArrowBackIcon} boxSize={6} color="gray.500" />
+          </Button>
+        )}
+        <Flex
+          ref={scrollRef}
+          style={styles.container}
+          onScroll={updateArrowVisibility}
+        >
+          {[...Array(24)].map((_, index) => (
+            <ProductSimple key={index} className="animate__animated animate__backInUp" />
+          ))}
+        </Flex>
+        {showRightArrow && (
+          <Button
+            onClick={() => scroll(200)}
+            position="absolute"
+            right="0"
+            top="50%"
+            transform="translateY(-50%)"
+            zIndex="1"
+            bg="white"
+            _hover={{ bg: "gray.100" }}
+          >
+            <Icon as={ArrowForwardIcon} boxSize={6} color="gray.500" />
+          </Button>
+        )}
       </Flex>
     </Box>
   );
@@ -41,21 +70,24 @@ const Carousel = () => {
 
 const styles = {
   container: {
-    minWidth: "103%",
     display: "flex",
-    overflowX: "auto",
+    overflowX: "scroll",
+    scrollBehavior: "smooth",
     gap: "1rem",
     padding: "1rem",
     alignItems: "center",
+    msOverflowStyle: "none",
+    scrollbarWidth: "none",
+    "&::-webkit-scrollbar": {
+      display: "none",
+    },
   },
   h1: {
     fontWeight: "bold",
     fontSize: "2rem",
     textAlign: "left",
     paddingLeft: ".5rem",
-  },
-  icon: {
-    cursor: "pointer",
+    marginBottom: "1rem",
   },
 };
 

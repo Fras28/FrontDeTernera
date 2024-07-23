@@ -4,6 +4,9 @@ import bgHero from "../assets/HeroBack.png"
 const Hero = () => {
   return (
     <div className='contHero'>
+      <div>
+        
+      </div>
     <div className="meat-quality-card">
       <img 
         src={bgHero} 

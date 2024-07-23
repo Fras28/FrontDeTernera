@@ -9,6 +9,11 @@ import Error from './Results/Error';
 import NotFound from './Results/NotFound';
 import UserProfile from './Results/Perfil';
 import EditUser from './Results/EditUser';
+import Ayuda from './Results/Ayuda';
+import Layout from './Results/layout';
+import CatallogoFull from './Catalogo/CatalogoFull';
+import PersonalDataForm from './Results/PersonalData';
+
 
 function App() {
   return (
@@ -23,6 +28,9 @@ function App() {
           <Route path="/notfound" element={<NotFound />} />
           <Route path="/UserProfile" element={<UserProfile />} />
           <Route path="/EditUser" element={<EditUser />} />
+          <Route path="/Ayuda" element={<Layout child={<Ayuda/>} />} />
+          <Route path="/CatFull" element={<Layout child={<CatallogoFull/>} />} />
+          <Route path="/PersonalData" element={<PersonalDataForm/>} />
           
           {/* Ruta para redirigir a NotFound si la URL no coincide con ninguna ruta definida */}
           <Route path="*" element={<Navigate to="/notfound" />} />

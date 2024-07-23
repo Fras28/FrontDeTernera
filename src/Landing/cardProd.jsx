@@ -12,7 +12,7 @@ const ProductCard = () => {
       </div>
 
         <div className="price">
-          <span>$12.900 / Kg</span>
+          <span>$12.900/Kg</span>
         </div>
       <div className="action">
         <button className="cart-button">
@@ -27,9 +27,3 @@ const ProductCard = () => {
 };
 
 export default ProductCard;
-
-
-const styles = {
-
-
-}

@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import TopNav from "./logoTop";
-import Hero from "./Hero";
-import SimpleThreeColumns from "./InfoGroup";
-import BottomNav from "./BottomNav";
-import Categorias from "./Categorias";
-import Carousel from "./MasVendidos";
-import FirtsInfo from "./FirstInfo";
 
-function Landing() {
+import TopNav from "../Landing/logoTop";
+import BottomNav from "../Landing/BottomNav";
+
+
+function Layout({child}) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
@@ -23,25 +20,14 @@ function Landing() {
     <div style={styles.container}>
       <TopNav />
       <div style={styles.container2}>
-        <div
-          style={{
-            ...styles.hero,
-            flexDirection: isMobile ? "column" : "row-reverse",
-          }}
-        >
-          <Hero />
-        </div>
-        <FirtsInfo />
-        <Categorias />
-        {/* <SimpleThreeColumns /> */}
-        <Carousel />
+      {child}
       </div>
       <BottomNav />
     </div>
   );
 }
 
-export default Landing;
+export default Layout;
 
 const styles = {
   contaiiner: { paddingBottom: "60px" },
