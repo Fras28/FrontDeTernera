@@ -6,6 +6,8 @@ import BottomNav from "./BottomNav";
 import Categorias from "./Categorias";
 import Carousel from "./MasVendidos";
 import FirtsInfo from "./FirstInfo";
+import { useDispatch } from "react-redux";
+import { uploadProducts } from "../Redux/Slice";
 
 function Landing() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -20,7 +22,7 @@ function Landing() {
   }, []);
 
   return (
-    <div style={styles.container}>
+    <div style={styles.contaiiner}>
       <TopNav />
       <div style={styles.container2}>
         <div
@@ -50,12 +52,12 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     padding: "1rem",
-    paddingBottom:"80px",
-    overflow:"hidden"
+    paddingBottom: "80px",
+    overflow: "hidden",
   },
   hero: {
     display: "flex",
     alignItems: "center",
-    overflow:"hidden"
+    overflow: "hidden",
   },
 };

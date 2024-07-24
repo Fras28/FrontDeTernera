@@ -1,6 +1,4 @@
 import React from "react";
-import Logo from "../assets/LogoDeTernera.png";
-import { border, Button, Image, Img } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 
 const TopNav = () => {

@@ -3,12 +3,8 @@ import meat from "../assets/meat.jpg";
 import pollo from "../assets/pollo.jpeg";
 import cerdo from "../assets/cerdo.jpeg";
 import oferta from "../assets/oferta.jpeg";
-import bgImg from "../assets/BackPoulet.png";
-import logo from "../assets/LogoDeTernera.png";
-import { background, border, Button } from "@chakra-ui/react";
-import { color } from "framer-motion";
-import { height, width } from "@fortawesome/free-solid-svg-icons/fa0";
-import { text } from "@fortawesome/fontawesome-svg-core";
+import {  Button } from "@chakra-ui/react";
+
 
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -66,9 +62,9 @@ const styles = {
   },
   container2: {
     display: "flex",
-    backgroundImage: `url(${logo})`,
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
+    // backgroundImage: `url(${logo})`,
+    // backgroundPosition: "center",
+    // backgroundRepeat: "no-repeat",
     filter: "drop-shadow(5px 5px 10px #000000)",
     gap: "1rem",
     justifyItems: "center",

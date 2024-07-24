@@ -58,7 +58,6 @@ const styles = {
     backgroundColor: "whitesmoke",
     boxShadow: "0 -2px 5px rgba(0, 0, 0, 0.1)",
     zIndex: 99,
-    borderTop: "solid orange 1px",
     bottom: 0,
     left: 0,
     right: 0,
