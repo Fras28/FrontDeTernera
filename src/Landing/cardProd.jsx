@@ -1,18 +1,19 @@
 import React from 'react';
 import carnde from "../assets/articulos.png"
 import "./Landing.css"
-const ProductCard = () => {
+const ProductCard = ({product}) => {
+  console.log(product, "product");
   return (
     <div className="card">
       <div className="image_container">
        <img src={carnde} alt="carnde" width="100%"/>
       </div>
       <div className="title">
-        <span>New brand name</span>
+        <span>{product?.nombre}</span>
       </div>
 
         <div className="price">
-          <span>$12.900/Kg</span>
+          <span>${product?.precioKG}</span>
         </div>
       <div className="action">
         <button className="cart-button">

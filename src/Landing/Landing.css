@@ -98,17 +98,15 @@
   --bg-linear: linear-gradient(0deg, var(--primary) 50%, var(--light) 125%);
   position: relative;
   display: flex;
-  padding: 1rem;
+  padding: .5rem;
   flex-direction: column;
-  gap: 0.75rem;
-  height: 300px;
+  /* height: 300px; */
   /* min-width: 220px; */
   background-color: #efefef;
   border-radius: 24px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px,
     rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .image_container {

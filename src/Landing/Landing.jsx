@@ -6,10 +6,11 @@ import BottomNav from "./BottomNav";
 import Categorias from "./Categorias";
 import Carousel from "./MasVendidos";
 import FirtsInfo from "./FirstInfo";
+import { useSelector } from "react-redux";
 
 function Landing() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
+  const categorias = useSelector(state=> state.allData.categories)
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);

@@ -5,14 +5,19 @@ import cerdo from "../assets/cerdo.jpeg";
 import oferta from "../assets/oferta.jpeg";
 import bgImg from "../assets/BackPoulet.png";
 import logo from "../assets/LogoDeTernera.png";
-import { background, border, Button } from "@chakra-ui/react";
+import { background, border, Box, Button } from "@chakra-ui/react";
 import { color } from "framer-motion";
 import { height, width } from "@fortawesome/free-solid-svg-icons/fa0";
 import { text } from "@fortawesome/fontawesome-svg-core";
+import { useSelector } from "react-redux";
+import { NavLink } from "react-router-dom";
+
+
+const API_BASR = process.env.REACT_APP_API_BASE;
 
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-
+  const categorias = useSelector(state=> state.allData.categories)
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -22,37 +27,16 @@ const Categorias = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const categorias = [
-    {
-      id: 1,
-      titulo: "Carnes Rojas",
-      imagen: meat,
-    },
-    {
-      id: 2,
-      titulo: "Pollo",
-      imagen: pollo,
-    },
-    {
-      id: 3,
-      titulo: "Cerdo",
-      imagen: cerdo,
-    },
-    {
-      id: 4,
-      titulo: "Promos",
-      imagen: oferta,
-    },
-  ];
+ 
 
   return (
     <div style={styles.container}>
       <h2 style={styles.titSection}>Nuestras categorías</h2>
       <div style={{ ...styles.container2, flexDirection: isMobile ? 'column' : 'row' }}>
         {categorias.map((categoria) => (
-          <div key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${categoria.imagen})` }}>
-            <Button style={styles.Button}><h3 style={styles.title}>{categoria.titulo}</h3></Button>
-          </div>
+          <Box as={NavLink} to={`/${categoria.nombre}`} key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${API_BASR}${categoria?.img?.data[0].attributes?.url})` }}>
+            <Button style={styles.Button}><h3 style={styles.title}>{categoria.nombre}</h3></Button>
+          </Box>
         ))}
       </div>
     </div>
