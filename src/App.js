@@ -20,6 +20,7 @@ import CatallogoFull from "./Catalogo/CatalogoFull";
 import PersonalDataForm from "./Results/PersonalData";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "./Redux/Slice";
+import DetalleProducto from "./Catalogo/ProductDetail";
 
 function App() {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function App() {
           <Route path="/UserProfile" element={<UserProfile />} />
           <Route path="/EditUser" element={<EditUser />} />
           <Route path="/Ayuda" element={<Layout child={<Ayuda />} />} />
+          <Route path="/ProdDetalle/:id" element={<DetalleProducto />} />
           <Route
             path="/CatFull"
             element={<Layout child={<CatallogoFull />} />}

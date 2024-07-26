@@ -18,7 +18,7 @@ function Layout({child}) {
 
   return (
     <div style={styles.container}>
-      <TopNav />
+      <TopNav showBackButton={true}/>
       <div style={styles.container2}>
       {child}
       </div>

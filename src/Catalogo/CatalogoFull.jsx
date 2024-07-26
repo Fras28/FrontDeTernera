@@ -74,6 +74,7 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
         </Box>
       </Button>
       <Box position="relative" maxW="100dvw" mt={4} mb={4}>
+        
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
             <Button

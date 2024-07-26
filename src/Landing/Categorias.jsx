@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import meat from "../assets/meat.jpg";
-import pollo from "../assets/pollo.jpeg";
-import cerdo from "../assets/cerdo.jpeg";
 import oferta from "../assets/oferta.jpeg";
-import bgImg from "../assets/BackPoulet.png";
 import logo from "../assets/LogoDeTernera.png";
-import { background, border, Box, Button } from "@chakra-ui/react";
-import { color } from "framer-motion";
-import { height, width } from "@fortawesome/free-solid-svg-icons/fa0";
-import { text } from "@fortawesome/fontawesome-svg-core";
+import { Box, Button } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
@@ -34,7 +27,7 @@ const Categorias = () => {
       <h2 style={styles.titSection}>Nuestras categorías</h2>
       <div style={{ ...styles.container2, flexDirection: isMobile ? 'column' : 'row' }}>
         {categorias.map((categoria) => (
-          <Box as={NavLink} to={`/${categoria.nombre}`} key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${API_BASR}${categoria?.img?.data[0].attributes?.url})` }}>
+          <Box as={NavLink} to={`/${categoria.nombre}`} key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${API_BASR}${categoria?.img?.data[0].attributes?.url})`,  backgroundImage: `url(${oferta})` }}>
             <Button style={styles.Button}><h3 style={styles.title}>{categoria.nombre}</h3></Button>
           </Box>
         ))}
