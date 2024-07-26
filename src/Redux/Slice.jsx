@@ -39,6 +39,7 @@ export const counterSlice = createSlice({
         state.cart.push({ articleId, name, price, quantity, valor, valorId });
       }
     },
+
     updateCartItemQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
       const itemIndex = state.cart.findIndex(item => item.articleId === articleId && item.valorId === valorId);
@@ -51,10 +52,10 @@ export const counterSlice = createSlice({
         }
       }
     },
-    removeFromCart: (state, action) => {
-      const { articleId, valorId } = action.payload;
-      state.cart = state.cart.filter(item => !(item.articleId === articleId && item.valorId === valorId));
-    },
+  removeFromCart: (state, action) => {
+  const { articleId, valorId } = action.payload;
+  state.cart = state.cart.filter(item => !(item.articleId === articleId && item.valorId === valorId));
+},
   },
   extraReducers: (builder) => {
     builder

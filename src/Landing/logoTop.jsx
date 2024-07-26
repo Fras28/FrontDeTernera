@@ -3,8 +3,12 @@ import Logo from "../assets/LogoDeTernera.png";
 import { border, Button, Image, Img } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
+import { useSelector } from "react-redux";
 
 const TopNav = ({showBackButton = false}) => {
+  const cartItems = useSelector((state) => state.allData.cart);
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+console.log(cartItems, "cartItems");
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -39,8 +43,22 @@ const TopNav = ({showBackButton = false}) => {
       <NavLink to={"/"}>
      {Logo}
       </NavLink>
-      <button >{carrito}</button>
-    </div>
+  <div style={{ position: 'relative' }}>
+    <span style={{
+      position: 'absolute',
+      top: '-10px',
+      right: '-10px',
+      background: 'red',
+      color: 'white',
+      borderRadius: '50%',
+      padding: '2px 6px',
+      fontSize: '12px'
+    }}>
+      {totalQuantity}
+    </span>
+    {carrito} {/* Donde carritoSvg es la variable que contiene tu SVG */}
+  </div>
+</div>
   );
 };
 

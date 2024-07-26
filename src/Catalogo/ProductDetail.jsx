@@ -21,7 +21,7 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import genericImg from "../assets/oferta.jpeg";
 import Carousel from "../Landing/MasVendidos";
 import TopNav from "../Landing/logoTop";
-import { addToCart } from "../Redux/Slice";
+import { addToCart, removeFromCart } from "../Redux/Slice";
 
 export default function DetalleProducto() {
   const dispatch = useDispatch();
@@ -32,7 +32,7 @@ export default function DetalleProducto() {
   const cart = useSelector((state) => state.allData.cart);
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
-  const [cantidad, setCantidad] = useState(1); // Estado para la cantidad
+  const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
@@ -45,7 +45,7 @@ export default function DetalleProducto() {
       const existingItem = cart?.find(
         (item) => item.articleId === articulo.id && item.valorId === selectedValor.id
       );
-      setCantidad(existingItem ? existingItem.quantity : 1);
+      setCantidad(existingItem ? existingItem.quantity : 0);
     }
   }, [selectedValor, articulo, cart]);
   
@@ -69,27 +69,47 @@ export default function DetalleProducto() {
     setSelectedValor(valor);
   };
 
-  const incrementarCantidad = () => setCantidad(cantidad + 1);
-  const decrementarCantidad = () => {
-    if (cantidad > 1) {
-      setCantidad(cantidad - 1);
-    }
-  };
-
-  const handleAddToCart = () => {
+  const handleRemoveFromCart = () => {
     if (selectedValor && articulo) {
-      dispatch(addToCart({
+      dispatch(removeFromCart({
         articleId: articulo.id,
-        name: articulo.nombre,
-        price: articulo.precioKG,
-        quantity: cantidad,
-        valor: selectedValor.attributes.nombre,
         valorId: selectedValor.id
       }));
+      setCantidad(0); // Reinicia la cantidad a 0
     }
   };
+  
 
-  console.log(articulo, "articulo detalle");
+  const incrementarCantidad = () => setCantidad(cantidad + 1);
+  const decrementarCantidad = () => {
+    if (cantidad > 0) {
+      const newQuantity = cantidad - 1;
+      if (newQuantity === 0) {
+        handleRemoveFromCart(); // Eliminar del carrito si la cantidad llega a 0
+      } else {
+        setCantidad(newQuantity);
+      }
+    }
+  };
+  const handleAddToCart = () => {
+    if (selectedValor && articulo) {
+      if (cantidad > 0) {
+        dispatch(addToCart({
+          articleId: articulo.id,
+          name: articulo.nombre,
+          price: articulo.precioKG,
+          quantity: cantidad,
+          valor: selectedValor.attributes.nombre,
+          valorId: selectedValor.id
+        }));
+      } else {
+        handleRemoveFromCart(); // En caso de que cantidad sea 0, se elimina del carrito
+      }
+    }
+  };
+  
+
+
 
   return (
     <div>
