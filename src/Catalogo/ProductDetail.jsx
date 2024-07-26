@@ -21,12 +21,15 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import genericImg from "../assets/oferta.jpeg";
 import Carousel from "../Landing/MasVendidos";
 import TopNav from "../Landing/logoTop";
+import { addToCart } from "../Redux/Slice";
 
 export default function DetalleProducto() {
-  const { id } = useParams(); 
+  const dispatch = useDispatch();
+  const { id } = useParams();
   const articulo = useSelector((state) =>
     state.allData?.articulos?.find((art) => art?.id === parseInt(id))
   );
+  const cart = useSelector((state) => state.allData.cart);
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
   const [cantidad, setCantidad] = useState(1); // Estado para la cantidad
@@ -36,6 +39,16 @@ export default function DetalleProducto() {
   useEffect(() => {
     updateArrowVisibility();
   }, []);
+
+  useEffect(() => {
+    if (selectedValor) {
+      const existingItem = cart?.find(
+        (item) => item.articleId === articulo.id && item.valorId === selectedValor.id
+      );
+      setCantidad(existingItem ? existingItem.quantity : 1);
+    }
+  }, [selectedValor, articulo, cart]);
+  
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -60,6 +73,19 @@ export default function DetalleProducto() {
   const decrementarCantidad = () => {
     if (cantidad > 1) {
       setCantidad(cantidad - 1);
+    }
+  };
+
+  const handleAddToCart = () => {
+    if (selectedValor && articulo) {
+      dispatch(addToCart({
+        articleId: articulo.id,
+        name: articulo.nombre,
+        price: articulo.precioKG,
+        quantity: cantidad,
+        valor: selectedValor.attributes.nombre,
+        valorId: selectedValor.id
+      }));
     }
   };
 
@@ -278,7 +304,7 @@ export default function DetalleProducto() {
                 transform: "translateY(2px)",
                 boxShadow: "lg",
               }}
-              onClick={() => {/* lógica para agregar al carrito */}}
+              onClick={handleAddToCart}
             >
               Agregar al carrito
             </Button>
