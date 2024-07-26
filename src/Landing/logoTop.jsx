@@ -43,7 +43,7 @@ console.log(cartItems, "cartItems");
       <NavLink to={"/"}>
      {Logo}
       </NavLink>
-  <div style={{ position: 'relative' }}>
+  <div style={{ position: 'relative', marginRight:"1.5rem" }}>
     <span style={{
       position: 'absolute',
       top: '-10px',
