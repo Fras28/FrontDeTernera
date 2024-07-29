@@ -4,7 +4,7 @@ import "./Landing.css"
 import { Button } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 const ProductCard = ({product}) => {
-  
+  console.log(product, "product");
   return (
     <div className="card">
       <div className="image_container">

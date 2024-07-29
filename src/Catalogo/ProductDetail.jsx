@@ -29,13 +29,14 @@ export default function DetalleProducto() {
   const articulo = useSelector((state) =>
     state.allData?.articulos?.find((art) => art?.id === parseInt(id))
   );
-  const cart = useSelector((state) => state.allData.cart);
+  const {cart, categories} = useSelector((state) => state.allData);
+  const oferta = categories.filter(cat => cat.id === 1)
+  console.log(oferta[0]?.sub_categorias , "oferta");
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
   const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-
   useEffect(() => {
     updateArrowVisibility();
   }, []);

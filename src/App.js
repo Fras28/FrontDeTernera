@@ -16,7 +16,7 @@ import UserProfile from "./Results/Perfil";
 import EditUser from "./Results/EditUser";
 import Ayuda from "./Results/Ayuda";
 import Layout from "./Results/layout";
-import CatallogoFull from "./Catalogo/CatalogoFull";
+import CatalogoFull from "./Catalogo/CatalogoFull";
 import PersonalDataForm from "./Results/PersonalData";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "./Redux/Slice";
@@ -34,13 +34,6 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          {categorias && categorias.map(categoria => (
-            <Route 
-              key={categoria.id}
-              path={`/${categoria.nombre}`} 
-              element={<Layout child={<CatallogoFull categori={categoria}/>} />} 
-            />
-          ))}
           <Route path="/" element={<Landing />} />
           <Route path="/Login" element={<SimpleCard />} />
           <Route path="/Signup" element={<SignupCard />} />
@@ -53,9 +46,18 @@ function App() {
           <Route path="/ProdDetalle/:id" element={<DetalleProducto />} />
           <Route
             path="/CatFull"
-            element={<Layout child={<CatallogoFull />} />}
+            element={<Layout child={<CatalogoFull />} />}
           />
           <Route path="/PersonalData" element={<PersonalDataForm />} />
+          
+          {/* Rutas dinámicas para categorías */}
+          {categorias && categorias.map(categoria => (
+            <Route 
+              key={categoria.id}
+              path={`/${categoria.nombre}`} 
+              element={<Layout child={<CatalogoFull categori={categoria}/>} />} 
+            />
+          ))}
           
           {/* Ruta para redirigir a NotFound si la URL no coincide con ninguna ruta definida */}
           <Route path="*" element={<Navigate to="/notfound" />} />

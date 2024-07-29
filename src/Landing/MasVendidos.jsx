@@ -1,14 +1,27 @@
 import React, { useRef, useState } from "react";
 import { Box, Heading, Flex, Icon, Button } from "@chakra-ui/react";
 import { ArrowForwardIcon, ArrowBackIcon } from "@chakra-ui/icons";
-import ProductSimple from "./cardProd";
-import 'animate.css';
+import "animate.css";
+import { useSelector } from "react-redux";
+import ProductCard from "./cardProd";
 
 const Carousel = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const { categories } = useSelector((state) => state.allData);
+  // Obtén todos los artículos de todas las subcategorías
+  const CatOfer = categories?.filter(cat=> cat.id === 1)
+console.log(CatOfer[0].sub_categorias, "CatOfer");
+  // Extrae todos los artículos de las subcategorías filtradas
+  const valoresArticulos = [];
 
+  CatOfer[0].sub_categorias.forEach(sub_categoria => {
+    sub_categoria.articulos.forEach(articulo => {
+      valoresArticulos.push(articulo);
+    });
+  });
+console.log(valoresArticulos, "valoresArticulos");
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollLeft += scrollOffset;
     updateArrowVisibility();
@@ -24,7 +37,7 @@ const Carousel = () => {
 
   return (
     <Box position="relative" maxW={"100dvw"}>
-      <Heading style={styles.h1}>LOS MAS VENDIDOS</Heading>
+      <Heading style={styles.h1}>NUESTRAS OFERTAS</Heading>
       <Flex position="relative">
         {showLeftArrow && (
           <Button
@@ -40,15 +53,19 @@ const Carousel = () => {
             <Icon as={ArrowBackIcon} boxSize={6} color="gray.500" />
           </Button>
         )}
-        <Flex
-          ref={scrollRef}
-          style={styles.container}
-          onScroll={updateArrowVisibility}
-        >
-          {[...Array(24)].map((_, index) => (
-            <ProductSimple key={index} className="animate__animated animate__backInUp" />
-          ))}
-        </Flex>
+<Flex
+  ref={scrollRef}
+  style={styles.container}
+  onScroll={updateArrowVisibility}
+>
+  {valoresArticulos.map((articulo) => (
+    <ProductCard
+
+      product={articulo}
+      className="animate__animated animate__backInUp"
+    />
+  ))}
+</Flex>
         {showRightArrow && (
           <Button
             onClick={() => scroll(200)}

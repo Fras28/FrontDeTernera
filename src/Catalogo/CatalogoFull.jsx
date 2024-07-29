@@ -1,37 +1,123 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Box, Button, Flex, Icon, Input, InputGroup, InputLeftElement, VStack } from "@chakra-ui/react";
-import imgBack from "../assets/HeroBack.png"
-import { ArrowBackIcon, ArrowForwardIcon, Search2Icon } from '@chakra-ui/icons';
-import CategoryComponent from './Categoria';
+import React, { useRef, useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Icon,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  VStack,
+  Text,
+  InputRightElement,
+} from "@chakra-ui/react";
+import imgBack from "../assets/HeroBack.png";
+import {
+  ArrowBackIcon,
+  ArrowForwardIcon,
+  Search2Icon,
+  SmallCloseIcon,
+} from "@chakra-ui/icons";
+import CategoryComponent from "./Categoria";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import ProductCard from "../Landing/cardProd";
 
-const CategoryButton = ({ name }) => (
-  <Button
-    bg="black"
-    color="white"
-    borderRadius="full"
-    px={6}
-    py={2}
-    _hover={{ bg: "gray.800" }}
-    minWidth="auto"
-    whiteSpace="nowrap"
-  >
-    {name}
-  </Button>
-);
+const CategoryButton = ({ name, id }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`#${id}`);
+  };
+
+  return (
+    <Button
+      bg="black"
+      color="white"
+      borderRadius="full"
+      px={6}
+      py={2}
+      _hover={{ bg: "gray.800" }}
+      minWidth="auto"
+      whiteSpace="nowrap"
+      onClick={handleClick}
+    >
+      {name}
+    </Button>
+  );
+};
 
 const CatalogoCompleto = ({ categori }) => {
   const scrollRef = useRef(null);
+  const location = useLocation();
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const cati = useSelector((state) => state.allData.categories);
+  const categoris = cati?.map((cat) => ({ id: cat?.id, nombre: cat?.nombre }));
 
-  const categories = ["Ofertas", "Ternera", "Pollo", "Cerdo", "Cordero", "Pescado"];
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredItems, setFilteredItems] = useState([]);
 
-  const scroll = (scrollOffset) => {
+  const scrollContainer = (scrollOffset) => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft += scrollOffset;
       updateArrowVisibility();
     }
   };
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      // Mostrar todos los elementos si searchTerm está vacío
+      if (categori) {
+        const allItems = categori.sub_categorias.flatMap(
+          (subCat) => subCat.articulos
+        );
+        setFilteredItems(allItems);
+      } else {
+        const allItems = cati.flatMap((cat) =>
+          cat.sub_categorias.flatMap((subCat) => subCat.articulos)
+        );
+        setFilteredItems(allItems);
+      }
+    } else {
+      // Filtrar los elementos si searchTerm tiene algún valor
+      if (categori) {
+        const filtered = categori.sub_categorias.flatMap((subCat) =>
+          subCat.articulos.filter((articulo) =>
+            Object.values(articulo).some((value) =>
+              value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          )
+        );
+        setFilteredItems(filtered);
+      } else {
+        const filtered = cati.flatMap((cat) =>
+          cat.sub_categorias.flatMap((subCat) =>
+            subCat.articulos.filter((articulo) =>
+              Object.values(articulo).some((value) =>
+                value
+                  .toString()
+                  .toLowerCase()
+                  .includes(searchTerm.toLowerCase())
+              )
+            )
+          )
+        );
+        setFilteredItems(filtered);
+      }
+    }
+  }, [searchTerm, categori, cati]);
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [location]);
 
   const updateArrowVisibility = () => {
     if (scrollRef.current) {
@@ -41,12 +127,20 @@ const CatalogoCompleto = ({ categori }) => {
     }
   };
 
-console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_categorias");
-//                                   .map
-//                                                  .map
   useEffect(() => {
     updateArrowVisibility();
   }, []);
+
+  const renderSearchResults = () => (
+    <VStack spacing={4} width="100%">
+      <Heading size="lg">Resultados de búsqueda</Heading>
+      {filteredItems?.map((item, index) => (
+        <Box key={item?.id} p={4} borderWidth={1} borderRadius="md">
+          <ProductCard key={index} product={item} />
+        </Box>
+      ))}
+    </VStack>
+  );
 
   const catalogFull = (
     <VStack spacing={4} width="100%">
@@ -74,11 +168,10 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
         </Box>
       </Button>
       <Box position="relative" maxW="100dvw" mt={4} mb={4}>
-        
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
             <Button
-              onClick={() => scroll(-200)}
+              onClick={() => scrollContainer(-200)}
               position="absolute"
               left="-1rem"
               zIndex={1}
@@ -95,22 +188,26 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
             overflowX="scroll"
             scrollBehavior="smooth"
             css={{
-              '&::-webkit-scrollbar': {
-                display: 'none',
+              "&::-webkit-scrollbar": {
+                display: "none",
               },
-              'scrollbarWidth': 'none',
-              '-ms-overflow-style': 'none',
+              scrollbarWidth: "none",
+              "-ms-overflow-style": "none",
             }}
             gap={4}
             px={4}
           >
-            {categories.map((category, index) => (
-              <CategoryButton key={index} name={category} />
+            {categoris.map((category) => (
+              <CategoryButton
+                key={category.id}
+                name={category.nombre}
+                id={category.id}
+              />
             ))}
           </Flex>
           {showRightArrow && (
             <Button
-              onClick={() => scroll(200)}
+              onClick={() => scrollContainer(200)}
               position="absolute"
               right="-1rem"
               zIndex={1}
@@ -125,18 +222,43 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
         </Flex>
       </Box>
       <InputGroup>
-        <InputLeftElement
-          pointerEvents="none"
-        >
+        <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input
           placeholder="Buscar producto"
           sx={styles.input}
-          _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}
+          _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <InputRightElement onClick={() => setSearchTerm("")} cursor="pointer">
+          <SmallCloseIcon color="gray.500" />
+        </InputRightElement>
       </InputGroup>
-      <CategoryComponent />
+      {searchTerm
+        ? renderSearchResults()
+        : cati?.map((Cat) => (
+            <div key={Cat.id} id={Cat.id}>
+              <Heading
+                color="black"
+                fontSize="4xl"
+                fontWeight="bold"
+                textShadow="2px 2px 4px rgba(0,0,0,0.6)"
+                textAlign="left"
+                marginLeft="1rem"
+              >
+                {Cat?.nombre}
+              </Heading>
+              {Cat.sub_categorias?.map((subCat) => (
+                <CategoryComponent
+                  key={subCat.id}
+                  detalle={subCat.detalle}
+                  articulos={subCat.articulos}
+                />
+              ))}
+            </div>
+          ))}
     </VStack>
   );
 
@@ -169,7 +291,7 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
             <Button
-              onClick={() => scroll(-200)}
+              onClick={() => scrollContainer(-200)}
               position="absolute"
               left="-1rem"
               zIndex={1}
@@ -186,22 +308,26 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
             overflowX="scroll"
             scrollBehavior="smooth"
             css={{
-              '&::-webkit-scrollbar': {
-                display: 'none',
+              "&::-webkit-scrollbar": {
+                display: "none",
               },
-              'scrollbarWidth': 'none',
-              '-ms-overflow-style': 'none',
+              scrollbarWidth: "none",
+              "-ms-overflow-style": "none",
             }}
             gap={4}
             px={4}
           >
-            {categori?.sub_categorias?.map((subCat, index) => (
-              <CategoryButton key={index} name={subCat.nombre} />
+            {categoris.map((category) => (
+              <CategoryButton
+                key={category.id}
+                name={category.nombre}
+                id={category.id}
+              />
             ))}
           </Flex>
           {showRightArrow && (
             <Button
-              onClick={() => scroll(200)}
+              onClick={() => scrollContainer(200)}
               position="absolute"
               right="-1rem"
               zIndex={1}
@@ -216,39 +342,52 @@ console.log(categori?.sub_categorias[0].articulos[0].contador, "categori?.sub_ca
         </Flex>
       </Box>
       <InputGroup>
-        <InputLeftElement
-          pointerEvents="none"
-        >
+        <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input
           placeholder="Buscar producto"
           sx={styles.input}
-          _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}
+          _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </InputGroup>
-      {categori?.sub_categorias?.map(subCat => (
-  <CategoryComponent
-    key={subCat.id}
-    nombre={subCat.nombre}
-    detalle={subCat.detalle}
-    articulos={subCat.articulos}
-  />
-))}
+      {searchTerm
+        ? renderSearchResults()
+        : categori?.sub_categorias?.map((subCat) => (
+            <CategoryComponent
+              key={subCat.id}
+              detalle={subCat.detalle}
+              articulos={subCat.articulos}
+            />
+          ))}
     </VStack>
   );
 
-  return categori ? catalogCategoria : catalogFull;
+  return (
+    <Flex
+      direction="column"
+      alignItems="center"
+      p={{ base: 2, md: 4 }}
+      width="100%"
+      mt="20"
+    >
+      {categori ? catalogCategoria : catalogFull}
+    </Flex>
+  );
 };
-
-export default CatalogoCompleto;
 
 const styles = {
   input: {
-    backgroundColor: "#F2F2F2",
-    borderRadius: "12px",
-    padding: ".5rem",
-    paddingLeft: "2.2rem",
-    fontWeight: "500"
-  }
+    border: "2px solid transparent",
+    borderRadius: "md",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+    transition: "all 0.2s ease-in-out",
+    _hover: {
+      borderColor: "blue.500",
+    },
+  },
 };
+
+export default CatalogoCompleto;
