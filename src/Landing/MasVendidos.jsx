@@ -12,13 +12,13 @@ const Carousel = () => {
   const { categories } = useSelector((state) => state.allData);
   // Obtén todos los artículos de todas las subcategorías
   const CatOfer = categories?.filter(cat=> cat.id === 1)
-console.log(CatOfer[0].sub_categorias, "CatOfer");
+console.log(CatOfer[0]?.sub_categorias, "CatOfer");
   // Extrae todos los artículos de las subcategorías filtradas
   const valoresArticulos = [];
 
-  CatOfer[0].sub_categorias.forEach(sub_categoria => {
-    sub_categoria.articulos.forEach(articulo => {
-      valoresArticulos.push(articulo);
+  CatOfer[0]?.sub_categorias.forEach(sub_categoria => {
+    sub_categoria?.articulos.forEach(articulo => {
+      valoresArticulos?.push(articulo);
     });
   });
 console.log(valoresArticulos, "valoresArticulos");
@@ -37,7 +37,7 @@ console.log(valoresArticulos, "valoresArticulos");
 
   return (
     <Box position="relative" maxW={"100dvw"}>
-      <Heading style={styles.h1}>NUESTRAS OFERTAS</Heading>
+      <Heading style={styles.h1}>Ofertas !</Heading>
       <Flex position="relative">
         {showLeftArrow && (
           <Button
