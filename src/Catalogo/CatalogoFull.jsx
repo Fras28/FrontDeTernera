@@ -86,7 +86,7 @@ const CatalogoCompleto = ({ categori }) => {
         const filtered = categori.sub_categorias.flatMap((subCat) =>
           subCat.articulos.filter((articulo) =>
             Object.values(articulo).some((value) =>
-              value.toString().toLowerCase().includes(searchTerm.toLowerCase())
+              value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
             )
           )
         );
@@ -96,8 +96,7 @@ const CatalogoCompleto = ({ categori }) => {
           cat.sub_categorias.flatMap((subCat) =>
             subCat.articulos.filter((articulo) =>
               Object.values(articulo).some((value) =>
-                value
-                  .toString()
+                value?.toString()
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase())
               )
@@ -134,11 +133,11 @@ const CatalogoCompleto = ({ categori }) => {
   const renderSearchResults = () => (
     <VStack spacing={4} width="100%">
       <Heading size="lg">Resultados de búsqueda</Heading>
-      {filteredItems?.map((item, index) => (
+      {filteredItems.length > 0?  filteredItems?.map((item, index) => (
         <Box key={item?.id} p={4} borderWidth={1} borderRadius="md">
           <ProductCard key={index} product={item} />
         </Box>
-      ))}
+      )) : <p>No se encontro ningun articulo con esas caracteristicas</p>}
     </VStack>
   );
 

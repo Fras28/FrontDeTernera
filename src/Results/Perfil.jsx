@@ -17,6 +17,7 @@ import TopNav from '../Landing/logoTop';
 import BlackBox from '../Landing/InfoTopBox';
 import BottomNav from '../Landing/BottomNav';
 import { NavLink } from 'react-router-dom';
+import LogInBtn from '../Autenticacion/LogInBtn';
 
 export default function UserProfile() {
 const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,8 +43,9 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
       gap={"1.5rem"}
       >
     <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"}  />
+    <LogInBtn/>
         <Button as={NavLink} to={"/PersonalData"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Datos personales {Arrow}</Button>
-        <Button as={NavLink} to={"/HistorialPedidos"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Pedidos {Arrow}</Button>
+        <Button as={NavLink} to={"/Pedidos"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Pedidos {Arrow}</Button>
     </Flex>
     <BottomNav/>
     </>

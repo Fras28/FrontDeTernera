@@ -19,13 +19,16 @@ import Layout from "./Results/layout";
 import CatalogoFull from "./Catalogo/CatalogoFull";
 import PersonalDataForm from "./Results/PersonalData";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "./Redux/Slice";
+import { fetchCategories, fetchValor } from "./Redux/Slice";
 import DetalleProducto from "./Catalogo/ProductDetail";
+import Pedidos from "./Results/Pedidos";
+import Carrito from "./Results/Carrito";
 
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchValor())
   }, [dispatch]);
 
   const categorias = useSelector(state => state.allData.categories);
@@ -41,6 +44,9 @@ function App() {
           <Route path="/error" element={<Error />} />
           <Route path="/notfound" element={<NotFound />} />
           <Route path="/UserProfile" element={<UserProfile />} />
+          <Route path="/Pedidos" element={<Pedidos />} />
+          <Route path="/Carrito" element={<Carrito />} />
+          <Route path="/Pedidos/:id?" element={<Pedidos />} />
           <Route path="/EditUser" element={<EditUser />} />
           <Route path="/Ayuda" element={<Layout child={<Ayuda />} />} />
           <Route path="/ProdDetalle/:id" element={<DetalleProducto />} />

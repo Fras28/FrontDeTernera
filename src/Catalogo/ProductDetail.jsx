@@ -101,7 +101,8 @@ export default function DetalleProducto() {
           price: articulo.precioKG,
           quantity: cantidad,
           valor: selectedValor.attributes.nombre,
-          valorId: selectedValor.id
+          valorId: selectedValor.id,
+          precioFinal: articulo.precioKG*selectedValor.attributes.GrsPorcion
         }));
       } else {
         handleRemoveFromCart(); // En caso de que cantidad sea 0, se elimina del carrito

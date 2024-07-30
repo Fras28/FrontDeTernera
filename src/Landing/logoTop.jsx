@@ -1,14 +1,15 @@
 import React from "react";
 import Logo from "../assets/LogoDeTernera.png";
-import { border, Button, Image, Img } from "@chakra-ui/react";
+import { border, Button, Image, Img, VStack } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { ChevronLeftIcon } from "@chakra-ui/icons";
 import { useSelector } from "react-redux";
+import { color } from "framer-motion";
 
 const TopNav = ({showBackButton = false}) => {
-  const cartItems = useSelector((state) => state.allData.cart);
-  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-console.log(cartItems, "cartItems");
+  const {cart,user} = useSelector((state) => state.allData);
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+console.log(cart, "cartItems");
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -25,58 +26,63 @@ console.log(cartItems, "cartItems");
       </svg>
       )
 
-  return (
-    <div style={styles.container}>
-      <div>  {showBackButton && (
-          <Button 
-            leftIcon={<ChevronLeftIcon />} 
-            onClick={handleBack} 
-            variant="link" 
-            color="black" 
-            alignSelf="flex-start" 
-            textAlign="left"
-            p={0}
-          >
-            Atrás
-          </Button>
-        )}</div>
-      <NavLink to={"/"}>
-     {Logo}
-      </NavLink>
-  <div style={{ position: 'relative', marginRight:"1.5rem" }}>
-    <span style={{
-      position: 'absolute',
-      top: '-10px',
-      right: '-10px',
-      background: 'red',
-      color: 'white',
-      borderRadius: '50%',
-      padding: '2px 6px',
-      fontSize: '12px'
-    }}>
-      {totalQuantity}
-    </span>
-    {carrito} {/* Donde carritoSvg es la variable que contiene tu SVG */}
-  </div>
-</div>
-  );
+      return (
+        <nav style={styles.nav}>
+          <div style={{minWidth:"62px"}}>
+          {showBackButton && (
+            <Button onClick={handleBack} leftIcon={<ChevronLeftIcon />} bg={"transparent"} padding={0}>
+              Atrás
+            </Button>
+          )}
+          </div>
+          <div style={styles.logoContainer}>
+          <NavLink to="/"> {Logo} </NavLink>
+          </div>
+          <div  style={styles.contCarr}>
+          {user? <p>Hola,{user.username?.split(" ")[0]}!</p>:null }
+          <div style={styles.cartInfo}>
+            <NavLink to="/carrito">{carrito}</NavLink>
+            <span style={styles.counter}>{totalQuantity}</span>
+          </div>
+          </div>
+        </nav>
+      );
 };
 
 const styles = {
-  container: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "10px",
-    backgroundColor: "whitesmoke",
-
+  nav: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 16px',
+    height: '80px',
+    backgroundColor: '#fff',
+    padding:".5rem "
+  },
+  logoContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    flex: 1,
   },
   logo: {
-    marginLeft:"1rem",
-    maxWidth: "80px",
-    height: "auto",
+    height: '100%',
   },
+  cartInfo: {
+    display: 'flex',
+    justifyContent:"center",
+    alignItems: 'center',
+  },
+  contCarr:{
+    overflow:"hidden",
+    width:"100px"
+  },
+  counter:{
+    backgroundColor:"red",
+    borderRadius:"50%",
+    padding:"1px 6px",
+    color:"white",
+    fontWeight:"bold"
+  }
 };
 
 export default TopNav;
