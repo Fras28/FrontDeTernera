@@ -28,10 +28,10 @@ console.log(cart, "cartItems");
 
       return (
         <nav style={styles.nav}>
-          <div style={{minWidth:"62px"}}>
+          <div style={{minWidth:"77.5px"}}>
           {showBackButton && (
-            <Button onClick={handleBack} leftIcon={<ChevronLeftIcon />} bg={"transparent"} padding={0}>
-              Atrás
+            <Button onClick={handleBack} leftIcon={<ChevronLeftIcon />} bg={"transparent"} padding={".5rem"}>
+               Atrás 
             </Button>
           )}
           </div>
