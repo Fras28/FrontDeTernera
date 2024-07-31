@@ -24,8 +24,7 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProductCard from "../Landing/cardProd";
 
-
-const API_BASE = process.env.REACT_APP_API_BASE
+const API_BASE = process.env.REACT_APP_API_BASE;
 
 const CategoryButton = ({ name, id }) => {
   const navigate = useNavigate();
@@ -68,6 +67,21 @@ const CatalogoCompleto = ({ categori }) => {
       updateArrowVisibility();
     }
   };
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        // Usar setTimeout para asegurar que el desplazamiento ocurra después de que el componente se haya renderizado completamente
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    } else {
+      // Si no hay hash, desplazar al inicio de la página
+      window.scrollTo(0, 0);
+    }
+  }, [location, categori]);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -99,7 +113,8 @@ const CatalogoCompleto = ({ categori }) => {
           cat.sub_categorias.flatMap((subCat) =>
             subCat.articulos.filter((articulo) =>
               Object.values(articulo).some((value) =>
-                value?.toString()
+                value
+                  ?.toString()
                   .toLowerCase()
                   .includes(searchTerm.toLowerCase())
               )
@@ -134,19 +149,23 @@ const CatalogoCompleto = ({ categori }) => {
   }, []);
 
   const renderSearchResults = () => (
-    <VStack spacing={4} width="100%">
+    <VStack spacing={4} width="100%" >
       <Heading size="lg">Resultados de búsqueda</Heading>
-      {filteredItems.length > 0?  filteredItems?.map((item, index) => (
-        <Box key={item?.id} p={4} borderWidth={1} borderRadius="md">
-          <ProductCard key={index} product={item} />
-        </Box>
-      )) : <p>No se encontro ningun articulo con esas caracteristicas</p>}
+      {filteredItems.length > 0 ? (
+        filteredItems?.map((item, index) => (
+          <Box key={item?.id} p={4} borderWidth={1} borderRadius="md">
+            <ProductCard key={index} product={item} />
+          </Box>
+        ))
+      ) : (
+        <p>No se encontro ningun articulo con esas caracteristicas</p>
+      )}
     </VStack>
   );
 
   const catalogFull = (
     <VStack spacing={4} width="100%">
-      <Button
+      <Box
         position="relative"
         overflow="hidden"
         borderRadius="lg"
@@ -168,7 +187,7 @@ const CatalogoCompleto = ({ categori }) => {
             CATÁLOGO COMPLETO
           </Box>
         </Box>
-      </Button>
+      </Box>
       <Box position="relative" maxW="100dvw" mt={4} mb={4}>
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
@@ -265,16 +284,17 @@ const CatalogoCompleto = ({ categori }) => {
   );
 
   const catalogCategoria = (
-    <VStack spacing={4} width="100%">
-      <Button
+    <VStack spacing={4} width="100%" marginTop={"0"} >
+      <Box
         position="relative"
         overflow="hidden"
         borderRadius="lg"
         width="100%"
         height="48"
-        backgroundImage={ `url(${API_BASE}${categori?.img?.data[0].attributes?.url})`}
+        backgroundImage={`url(${API_BASE}${categori?.img?.data[0].attributes?.url})`}
         backgroundSize="cover"
         backgroundPosition="center"
+  
       >
         <Box
           position="absolute"
@@ -288,7 +308,7 @@ const CatalogoCompleto = ({ categori }) => {
             {categori?.nombre}
           </Box>
         </Box>
-      </Button>
+      </Box>
       <Box position="relative" maxW="100dvw" mt={4} mb={4}>
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
