@@ -62,13 +62,22 @@ const BagCard = ({ producto }) => {
         <img src={imgArt} alt="imgArt"  style={{height:"68px"}} />
       </Flex>
       <Flex justifyContent="space-between" alignItems="center">
-        <VStack align="start" spacing={1} gap="0">
+  <VStack align="start" spacing={1} gap="0">
           <Box bg="black" color="white" px={2} py={1} borderRadius="full">
             <Text fontSize="xs">{producto?.valor}</Text>
           </Box>
           <Text fontWeight="medium" fontSize="16px">{producto?.name}</Text>
-          <Text fontWeight="bold">${producto?.precioFinal} /u.</Text>
-     
+          <Text 
+            fontWeight="bold" 
+            color={producto.discountPercentage > 0 ? "green.500" : "inherit"}
+          >
+            ${producto?.precioFinal.toFixed(2)} /u.
+          </Text>
+          {producto.discountPercentage > 0 && (
+            <Text fontSize="xs" color="green.500" style={{textAlign:"left" ,  textWrap: "nowrap"}} >
+              {producto.discountPercentage}% descuento aplicado
+            </Text>
+          )}
         </VStack>
       </Flex>
       <Flex

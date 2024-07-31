@@ -29,9 +29,9 @@ export default function DetalleProducto() {
   const articulo = useSelector((state) =>
     state.allData?.articulos?.find((art) => art?.id === parseInt(id))
   );
-  const {cart, categories} = useSelector((state) => state.allData);
-  const oferta = categories.filter(cat => cat.id === 1)
-  console.log(oferta[0]?.sub_categorias , "oferta");
+  const { cart, categories } = useSelector((state) => state.allData);
+  const oferta = categories.filter((cat) => cat.id === 1);
+  console.log(oferta[0]?.sub_categorias, "oferta");
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
   const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
@@ -44,12 +44,12 @@ export default function DetalleProducto() {
   useEffect(() => {
     if (selectedValor) {
       const existingItem = cart?.find(
-        (item) => item.articleId === articulo.id && item.valorId === selectedValor.id
+        (item) =>
+          item.articleId === articulo.id && item.valorId === selectedValor.id
       );
       setCantidad(existingItem ? existingItem.quantity : 0);
     }
   }, [selectedValor, articulo, cart]);
-  
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -72,14 +72,15 @@ export default function DetalleProducto() {
 
   const handleRemoveFromCart = () => {
     if (selectedValor && articulo) {
-      dispatch(removeFromCart({
-        articleId: articulo.id,
-        valorId: selectedValor.id
-      }));
+      dispatch(
+        removeFromCart({
+          articleId: articulo.id,
+          valorId: selectedValor.id,
+        })
+      );
       setCantidad(0); // Reinicia la cantidad a 0
     }
   };
-  
 
   const incrementarCantidad = () => setCantidad(cantidad + 1);
   const decrementarCantidad = () => {
@@ -95,27 +96,36 @@ export default function DetalleProducto() {
   const handleAddToCart = () => {
     if (selectedValor && articulo) {
       if (cantidad > 0) {
-        dispatch(addToCart({
-          articleId: articulo.id,
-          name: articulo.nombre,
-          price: articulo.precioKG,
-          quantity: cantidad,
-          valor: selectedValor.attributes.nombre,
-          valorId: selectedValor.id,
-          precioFinal: articulo.precioKG*selectedValor.attributes.GrsPorcion
-        }));
+        const discountedPrice = articulo.DescPorciento 
+          ? calculateDiscountedPrice(articulo.precioKG, articulo.DescPorciento)
+          : articulo.precioKG;
+
+        dispatch(
+          addToCart({
+            articleId: articulo.id,
+            name: articulo.nombre,
+            price: discountedPrice, // Use discounted price
+            quantity: cantidad,
+            valor: selectedValor.attributes.nombre,
+            valorId: selectedValor.id,
+            precioFinal: discountedPrice * selectedValor.attributes.GrsPorcion,
+            discountPercentage: articulo.DescPorciento || 0,
+          })
+        );
       } else {
-        handleRemoveFromCart(); // En caso de que cantidad sea 0, se elimina del carrito
+        handleRemoveFromCart();
       }
     }
   };
-  
+
   const formatPrice = (price) => {
-    if (typeof price !== 'number') return price;
+    if (typeof price !== "number") return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
-
+  const calculateDiscountedPrice = (price, discount) => {
+    return price * (1 - discount / 100);
+  };
   return (
     <div>
       <TopNav showBackButton={true} />
@@ -126,7 +136,7 @@ export default function DetalleProducto() {
           py={{ base: 18, md: 24 }}
         >
           <Flex position="relative">
-            <Image
+          <Image
               rounded="md"
               alt="product image"
               src={genericImg}
@@ -135,6 +145,23 @@ export default function DetalleProducto() {
               w="100%"
               h={{ base: "100%", sm: "400px", lg: "500px" }}
             />
+              {articulo?.DescPorciento != null && articulo?.DescPorciento !== 0 && (
+              <Box
+                position="absolute"
+                top="15px"
+                left="15px"
+                bg="#318215"
+                color="white"
+                px="2"
+                py="1"
+                borderRadius="md"
+                fontSize="sm"
+                fontWeight="bold"
+                zIndex="1"
+              >
+                -{articulo.DescPorciento}% OFF
+              </Box>
+            )}
             <Box
               position="absolute"
               bottom=".2rem"
@@ -153,17 +180,60 @@ export default function DetalleProducto() {
             </Box>
           </Flex>
           <Stack spacing={{ base: 6, md: 10 }}>
-          <Box as="header">
-  <Text
-    color={useColorModeValue("gray.900", "gray.400")}
-    fontWeight={"bold"}
-    fontSize="32px"
-    textAlign={"left"}
-  >
-    ${formatPrice(Number(articulo?.precioKG))} /Kg
-  </Text>
-</Box>
-
+            <Box as="header">
+              {articulo?.DescPorciento != null &&
+              articulo?.DescPorciento !== 0 ? (
+                <Flex alignItems="center" gap={2}>
+                  <Text
+                    color="#318215"
+                    fontWeight="bold"
+                    fontSize="32px"
+                    textAlign="left"
+                  >
+                    $
+                    {formatPrice(
+                      calculateDiscountedPrice(
+                        Number(articulo?.precioKG),
+                        articulo?.DescPorciento
+                      )
+                    )}{" "}
+                    /Kg
+                  </Text>
+                  <Text
+                    as="s"
+                    color={"gray.400"}
+                    fontSize="l"
+                    textAlign="left"
+                  >
+                    ${formatPrice(Number(articulo?.precioKG))} /Kg
+                  </Text>
+                </Flex>
+              ) : (
+                <Text
+                  color={"gray.900"}
+                  fontWeight="bold"
+                  fontSize="32px"
+                  textAlign="left"
+                >
+                  ${formatPrice(Number(articulo?.precioKG))} /Kg
+                </Text>
+              )}
+            </Box>
+            {/* {articulo?.DescPorciento != null &&
+              articulo?.DescPorciento !== 0 && (
+                <Box
+                  bg="#318215"
+                  color="white"
+                  px={2}
+                  py={1}
+                  borderRadius="md"
+                  fontSize="sm"
+                  fontWeight="bold"
+                  alignSelf="flex-start"
+                >
+                  -{articulo.DescPorciento}% OFF
+                </Box>
+              )} */}
             <Stack
               spacing={{ base: 4, sm: 6 }}
               direction="column"
@@ -173,7 +243,7 @@ export default function DetalleProducto() {
                 />
               }
             >
-              <VStack spacing={{  sm: 6 }} alignItems="flex-start">
+              <VStack spacing={{ sm: 6 }} alignItems="flex-start">
                 <Text
                   color={useColorModeValue("gray.500", "gray.400")}
                   fontSize="2xl"
@@ -182,9 +252,18 @@ export default function DetalleProducto() {
                   whiteSpace="pre-wrap"
                   wordBreak="break-word"
                 >
-                  {articulo?.detalle?.length < 36 || articulo?.detalle?.length === null ? <Text textAlign={"left"} fontSize="1rem">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue.
-                  </Text> : <Text textAlign={"left"}>{articulo?.detalle }</Text>}
+                  {articulo?.detalle?.length < 36 ||
+                  articulo?.detalle?.length === null ? (
+                    <Text textAlign={"left"} fontSize="1rem">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                      Ut et massa mi. Aliquam in hendrerit urna. Pellentesque
+                      sit amet sapien fringilla, mattis ligula consectetur,
+                      ultrices mauris. Maecenas vitae mattis tellus. Nullam quis
+                      imperdiet augue.
+                    </Text>
+                  ) : (
+                    <Text textAlign={"left"}>{articulo?.detalle}</Text>
+                  )}
                   {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. */}
                 </Text>
                 <Box position="relative" maxW="100%" mt={4} mb={4}>
@@ -195,7 +274,11 @@ export default function DetalleProducto() {
                   >
                     Seleccioná opción
                   </Text>
-                  <Flex position="relative" alignItems="center" overflow="hidden">
+                  <Flex
+                    position="relative"
+                    alignItems="center"
+                    overflow="hidden"
+                  >
                     {showLeftArrow && (
                       <Button
                         onClick={() => scroll(-200)}
@@ -227,7 +310,11 @@ export default function DetalleProducto() {
                       maxW="100%"
                     >
                       {articulo?.valors?.data?.map((valor) => (
-                        <ValorsBtn key={valor.id} valor={valor} onSelect={handleValorSelect} />
+                        <ValorsBtn
+                          key={valor.id}
+                          valor={valor}
+                          onSelect={handleValorSelect}
+                        />
                       ))}
                     </Flex>
                     {showRightArrow && (
@@ -242,7 +329,11 @@ export default function DetalleProducto() {
                         size="sm"
                         boxShadow="md"
                       >
-                        <Icon as={ArrowForwardIcon} boxSize={4} color="gray.500" />
+                        <Icon
+                          as={ArrowForwardIcon}
+                          boxSize={4}
+                          color="gray.500"
+                        />
                       </Button>
                     )}
                   </Flex>
@@ -267,55 +358,55 @@ export default function DetalleProducto() {
             display={"flex"}
             gap={"1rem"}
           >
-            <Flex 
-      justify="center" 
-      alignItems="center" 
-      mb={4} 
-      overflow="hidden" 
-      borderRadius="full"
-      width="200px"
-      height="50px"
-      bg="black"
-      color="white"
-    >
-      <Button 
-        onClick={decrementarCantidad} 
-        bg="black" 
-        color="white" 
-        borderRadius="none" 
-        height="100%" 
-        width="33%"
-        _hover={{ bg: 'gray.800' }}
-        _active={{ bg: 'gray.700' }}
-      >
-        -
-      </Button>
-      <Box 
-        width="34%" 
-        bg="white" 
-        height="100%" 
-        display="flex" 
-        alignItems="center" 
-        justifyContent="center"
-        border="solid black 2px"
-      >
-        <Text fontSize="lg" color="black" fontWeight="bold" >
-          {cantidad}
-        </Text>
-      </Box>
-      <Button 
-        onClick={incrementarCantidad} 
-        bg="black" 
-        color="white" 
-        borderRadius="none" 
-        height="100%" 
-        width="33%"
-        _hover={{ bg: 'gray.800' }}
-        _active={{ bg: 'gray.700' }}
-      >
-        +
-      </Button>
-    </Flex>
+            <Flex
+              justify="center"
+              alignItems="center"
+              mb={4}
+              overflow="hidden"
+              borderRadius="full"
+              width="200px"
+              height="50px"
+              bg="black"
+              color="white"
+            >
+              <Button
+                onClick={decrementarCantidad}
+                bg="black"
+                color="white"
+                borderRadius="none"
+                height="100%"
+                width="33%"
+                _hover={{ bg: "gray.800" }}
+                _active={{ bg: "gray.700" }}
+              >
+                -
+              </Button>
+              <Box
+                width="34%"
+                bg="white"
+                height="100%"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                border="solid black 2px"
+              >
+                <Text fontSize="lg" color="black" fontWeight="bold">
+                  {cantidad}
+                </Text>
+              </Box>
+              <Button
+                onClick={incrementarCantidad}
+                bg="black"
+                color="white"
+                borderRadius="none"
+                height="100%"
+                width="33%"
+                _hover={{ bg: "gray.800" }}
+                _active={{ bg: "gray.700" }}
+              >
+                +
+              </Button>
+            </Flex>
             <Button
               rounded="none"
               w="full"

@@ -11,17 +11,17 @@ const Carousel = () => {
   const [showRightArrow, setShowRightArrow] = useState(true);
   const { categories } = useSelector((state) => state.allData);
   // Obtén todos los artículos de todas las subcategorías
-  const CatOfer = categories?.filter(cat=> cat.id === 1)
-console.log(CatOfer[0]?.sub_categorias, "CatOfer");
+  const CatOfer = categories?.filter((cat) => cat.id === 1);
+  console.log(CatOfer[0]?.sub_categorias, "CatOfer");
   // Extrae todos los artículos de las subcategorías filtradas
   const valoresArticulos = [];
 
-  CatOfer[0]?.sub_categorias.forEach(sub_categoria => {
-    sub_categoria?.articulos.forEach(articulo => {
+  CatOfer[0]?.sub_categorias.forEach((sub_categoria) => {
+    sub_categoria?.articulos.forEach((articulo) => {
       valoresArticulos?.push(articulo);
     });
   });
-console.log(valoresArticulos, "valoresArticulos");
+  console.log(valoresArticulos, "valoresArticulos");
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollLeft += scrollOffset;
     updateArrowVisibility();
@@ -53,19 +53,18 @@ console.log(valoresArticulos, "valoresArticulos");
             <Icon as={ArrowBackIcon} boxSize={6} color="gray.500" />
           </Button>
         )}
-<Flex
-  ref={scrollRef}
-  style={styles.container}
-  onScroll={updateArrowVisibility}
->
-  {valoresArticulos.map((articulo) => (
-    <ProductCard
-
-      product={articulo}
-      className="animate__animated animate__backInUp"
-    />
-  ))}
-</Flex>
+        <Flex
+          ref={scrollRef}
+          style={styles.container}
+          onScroll={updateArrowVisibility}
+        >
+          {valoresArticulos.map((articulo) => (
+            <ProductCard
+              product={articulo}
+              className="animate__animated animate__backInUp"
+            />
+          ))}
+        </Flex>
         {showRightArrow && (
           <Button
             onClick={() => scroll(200)}

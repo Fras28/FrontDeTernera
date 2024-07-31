@@ -11,6 +11,7 @@ const initialState = {
   articulos: [],
   valores: [],
   cart: [],
+  cartTotal: 0,
   status: "idle",
   error: null,
 };
@@ -74,18 +75,22 @@ export const logoutUser = createAsyncThunk("user/logout", async () => {
   return null;
 });
 
+const calculateCartTotal = (cart) => {
+  return cart.reduce((total, item) => total + item.precioFinal * item.quantity, 0);
+};
+
 export const counterSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { articleId, name, price, quantity, valor, valorId, precioFinal } =
+      const { articleId, name, price, quantity, valor, valorId, precioFinal,discountPercentage } =
         action.payload;
       const existingItem = state.cart.find(
         (item) => item.articleId === articleId && item.valorId === valorId
       );
       if (existingItem) {
-        existingItem.quantity = quantity; // Reemplaza la cantidad en lugar de sumarla
+        existingItem.quantity = quantity;
       } else {
         state.cart.push({
           articleId,
@@ -95,8 +100,10 @@ export const counterSlice = createSlice({
           valor,
           valorId,
           precioFinal,
+          discountPercentage,
         });
       }
+      state.cartTotal = calculateCartTotal(state.cart);
     },
     updateCartQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
@@ -106,6 +113,7 @@ export const counterSlice = createSlice({
       if (item) {
         item.quantity = quantity;
       }
+      state.cartTotal = calculateCartTotal(state.cart);
     },
     updateCartItemQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
@@ -116,20 +124,21 @@ export const counterSlice = createSlice({
       if (item) {
         if (quantity <= 0) {
           state.cart = state.cart.filter(
-            (item) => item.articleId !== articleId
+            (item) => item.articleId !== articleId || item.valorId !== valorId
           );
         } else {
           item.quantity = quantity;
         }
       }
+      state.cartTotal = calculateCartTotal(state.cart);
     },
-
     removeFromCart: (state, action) => {
       state.cart = state.cart.filter(
         (item) =>
           item.articleId !== action.payload.articleId ||
           item.valorId !== action.payload.valorId
       );
+      state.cartTotal = calculateCartTotal(state.cart);
     },
 
     logout: (state) => {
