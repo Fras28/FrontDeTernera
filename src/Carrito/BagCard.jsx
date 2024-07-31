@@ -2,6 +2,7 @@ import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { removeFromCart, updateCartQuantity } from "../Redux/Slice";
 import { useDispatch } from "react-redux";
+import imgArt from "../assets/articulos.png"
 
 const BagCard = ({ producto }) => {
   const dispatch = useDispatch();
@@ -51,25 +52,23 @@ const BagCard = ({ producto }) => {
 
   return (
     <HStack
-      bg="white"
       w="100%"
       p={4}
-      borderRadius="lg"
-      boxShadow="md"
-      mb={3}
+       borderBottom="solid 1px lightgrey"
       display="flex"
       justifyContent="space-between"
     >
+      <Flex height={"100%"} >
+        <img src={imgArt} alt="imgArt"  style={{height:"68px"}} />
+      </Flex>
       <Flex justifyContent="space-between" alignItems="center">
-        <VStack align="start" spacing={1}>
+        <VStack align="start" spacing={1} gap="0">
           <Box bg="black" color="white" px={2} py={1} borderRadius="full">
             <Text fontSize="xs">{producto?.valor}</Text>
           </Box>
-          <Text fontWeight="medium">{producto?.name}</Text>
-          <Text fontWeight="bold">Unit: ${producto?.precioFinal}</Text>
-          <Text fontWeight="bold">
-            Total: ${producto?.precioFinal * producto?.quantity}
-          </Text>
+          <Text fontWeight="medium" fontSize="16px">{producto?.name}</Text>
+          <Text fontWeight="bold">${producto?.precioFinal} /u.</Text>
+     
         </VStack>
       </Flex>
       <Flex
@@ -103,6 +102,7 @@ const BagCard = ({ producto }) => {
           alignItems="center"
           justifyContent="center"
           border="solid black 2px"
+          padding="0 .5rem"
         >
           <Text fontSize="lg" color="black" fontWeight="bold">
             {cantidad}

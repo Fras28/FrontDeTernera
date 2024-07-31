@@ -35,7 +35,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "1rem",
+    padding: ".5rem",
     paddingBottom:"80px",
     overflow:"hidden"
   },

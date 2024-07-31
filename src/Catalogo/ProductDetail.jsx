@@ -110,7 +110,10 @@ export default function DetalleProducto() {
     }
   };
   
-
+  const formatPrice = (price) => {
+    if (typeof price !== 'number') return price;
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
 
 
   return (
@@ -150,16 +153,16 @@ export default function DetalleProducto() {
             </Box>
           </Flex>
           <Stack spacing={{ base: 6, md: 10 }}>
-            <Box as="header">
-              <Text
-                color={useColorModeValue("gray.900", "gray.400")}
-                fontWeight={"bold"}
-                fontSize="32px"
-                textAlign={"left"}
-              >
-                ${articulo?.precioKG} /Kg
-              </Text>
-            </Box>
+          <Box as="header">
+  <Text
+    color={useColorModeValue("gray.900", "gray.400")}
+    fontWeight={"bold"}
+    fontSize="32px"
+    textAlign={"left"}
+  >
+    ${formatPrice(Number(articulo?.precioKG))} /Kg
+  </Text>
+</Box>
 
             <Stack
               spacing={{ base: 4, sm: 6 }}
@@ -170,7 +173,7 @@ export default function DetalleProducto() {
                 />
               }
             >
-              <VStack spacing={{ base: 4, sm: 6 }} alignItems="flex-start">
+              <VStack spacing={{  sm: 6 }} alignItems="flex-start">
                 <Text
                   color={useColorModeValue("gray.500", "gray.400")}
                   fontSize="2xl"
@@ -179,7 +182,10 @@ export default function DetalleProducto() {
                   whiteSpace="pre-wrap"
                   wordBreak="break-word"
                 >
-                  {articulo?.detalle}
+                  {articulo?.detalle.length < 36 ? <Text textAlign={"left"} fontSize="1rem">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue.
+                  </Text> : <Text textAlign={"left"}>{articulo?.detalle }</Text>}
+                  {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. */}
                 </Text>
                 <Box position="relative" maxW="100%" mt={4} mb={4}>
                   <Text

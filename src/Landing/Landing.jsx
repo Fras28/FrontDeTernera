@@ -7,6 +7,7 @@ import Categorias from "./Categorias";
 import Carousel from "./MasVendidos";
 import FirtsInfo from "./FirstInfo";
 import { useSelector } from "react-redux";
+import BlackBoxBottom from "./InfoBottomBox";
 
 function Landing() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -36,6 +37,7 @@ function Landing() {
         <Categorias />
         {/* <SimpleThreeColumns /> */}
         <Carousel />
+      <BlackBoxBottom  titulo1={"Horarios de atención"}  info1="lu - vie: 00:00 a 00:00"  titulo2="Contacto" info2="(291)xxx xxx x" />
       </div>
       <BottomNav />
     </div>
