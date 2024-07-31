@@ -24,6 +24,9 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProductCard from "../Landing/cardProd";
 
+
+const API_BASE = process.env.REACT_APP_API_BASE
+
 const CategoryButton = ({ name, id }) => {
   const navigate = useNavigate();
 
@@ -269,7 +272,7 @@ const CatalogoCompleto = ({ categori }) => {
         borderRadius="lg"
         width="100%"
         height="48"
-        backgroundImage={`url(${imgBack})`}
+        backgroundImage={ `url(${API_BASE}${categori?.img?.data[0].attributes?.url})`}
         backgroundSize="cover"
         backgroundPosition="center"
       >
