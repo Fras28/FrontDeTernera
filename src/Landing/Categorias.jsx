@@ -1,34 +1,44 @@
 import React, { useState, useEffect } from "react";
-import oferta from "../assets/oferta.jpeg";
+import oferta from "../assets/Carnita.jpg";
 import logo from "../assets/LogoDeTernera.png";
 import { Box, Button } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
-
 const API_BASE = process.env.REACT_APP_API_BASE;
 
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const categorias = useSelector(state=> state.allData.categories)
+  const categorias = useSelector((state) => state.allData.categories);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-
- 
+  const categoriasOrdenadas = [...categorias].sort((a, b) => a.id - b.id);
 
   return (
     <div style={styles.container}>
       <h2 style={styles.titSection}>Nuestras categorías</h2>
-      <div style={{ ...styles.container2, flexDirection: isMobile ? 'column' : 'row' }}>
-        {categorias.map((categoria) => (
-          <Box as={NavLink} to={`/${categoria.nombre}`} key={categoria.id} style={{ ...styles.card, backgroundImage: `url(${API_BASE}${categoria?.img?.data[0].attributes?.url})` }}>
-            <Button style={styles.Button}><h3 style={styles.title}>{categoria.nombre}</h3></Button>
+      <div
+        style={{
+          ...styles.container2,
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
+        {categoriasOrdenadas.map((categoria) => (
+          <Box
+            as={NavLink}
+            to={`/${categoria.nombre}`}
+            key={categoria.id}
+            style={{ ...styles.card, backgroundImage: `url(${oferta})` }}
+          >
+            <Button style={styles.Button}>
+              <h3 style={styles.title}>{categoria.nombre}</h3>
+            </Button>
           </Box>
         ))}
       </div>

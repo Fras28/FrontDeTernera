@@ -60,7 +60,7 @@
 .cta-button:hover {
   background-color: #c53030;
 }
-.contInfoHero{
+.contInfoHero {
   display: flex;
 }
 .contInfoHero > div {
@@ -98,11 +98,11 @@
   --bg-linear: linear-gradient(0deg, var(--primary) 50%, var(--light) 125%);
   position: relative;
   display: flex;
-  padding: .5rem;
+  padding: 0.5rem;
   flex-direction: column;
-  height: 270px; 
-   min-width: 156px; 
-   background-color: #efefef;
+  height: 270px;
+  min-width: 184px;
+  background-color: #efefef;
   border-radius: 24px;
   justify-content: space-between;
 }
@@ -115,8 +115,6 @@
   height: 8rem;
   border-radius: 12px;
 }
-
-
 
 .title {
   overflow: hidden;
@@ -184,12 +182,12 @@
   gap: 0.25rem;
   padding: 0.5rem;
   width: 100%;
-  background-color: #CA0017;
+  background-color: #ca0017;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--light);
   white-space: nowrap;
-  border-radius:24px;
+  border-radius: 24px;
 }
 
 .cart-button .cart-icon {
@@ -211,7 +209,7 @@
   .react-parallax-content {
     height: auto;
   }
-  .contInfoHero{
-   flex-direction: column;
+  .contInfoHero {
+    flex-direction: column;
   }
 }

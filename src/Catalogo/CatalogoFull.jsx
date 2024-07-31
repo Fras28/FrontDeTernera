@@ -23,6 +23,7 @@ import CategoryComponent from "./Categoria";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProductCard from "../Landing/cardProd";
+import Carousel from "../Landing/MasVendidos";
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -386,6 +387,7 @@ const CatalogoCompleto = ({ categori }) => {
             />
           </Box>
           ))}
+          <Carousel/>
     </VStack>
   );
 
