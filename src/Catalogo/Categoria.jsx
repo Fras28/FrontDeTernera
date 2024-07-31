@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, SimpleGrid, Heading } from "@chakra-ui/react";
 import ProductCard from '../Landing/cardProd';
-
-export default function CategoryComponent({ nombre, detalle, articulos }) {
+// { nombre, detalle, articulos }
+export default function CategoryComponent({Categoria}) {
   return (
-    <Box my={8}>
+    <Box my={1}>
       <Box mb={6} display="flex">
         <Heading
           color="black"
@@ -14,11 +14,11 @@ export default function CategoryComponent({ nombre, detalle, articulos }) {
           textAlign="left"
           marginLeft="1rem"
         >
-          {nombre}
+          {Categoria?.nombre}
         </Heading>
       </Box>
       <SimpleGrid columns={[2, null, 3, 4]} spacing={4}>
-        {articulos?.map((producto, index) => (
+        {Categoria?.articulos?.map((producto, index) => (
           <ProductCard key={index} product={producto} />
         ))}
       </SimpleGrid>

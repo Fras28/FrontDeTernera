@@ -27,10 +27,11 @@ import ProductCard from "../Landing/cardProd";
 const API_BASE = process.env.REACT_APP_API_BASE;
 
 const CategoryButton = ({ name, id }) => {
-  const navigate = useNavigate();
-
   const handleClick = () => {
-    navigate(`#${id}`);
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   return (
@@ -49,7 +50,6 @@ const CategoryButton = ({ name, id }) => {
     </Button>
   );
 };
-
 const CatalogoCompleto = ({ categori }) => {
   const scrollRef = useRef(null);
   const location = useLocation();
@@ -163,6 +163,8 @@ const CatalogoCompleto = ({ categori }) => {
     </VStack>
   );
 
+  console.log( categori?.sub_categorias, " categori?.sub_categorias");
+
   const catalogFull = (
     <VStack spacing={4} width="100%">
       <Box
@@ -266,7 +268,7 @@ const CatalogoCompleto = ({ categori }) => {
                 fontSize="4xl"
                 fontWeight="bold"
                 textShadow="2px 2px 4px rgba(0,0,0,0.6)"
-                textAlign="left"
+                textAlign="center"
                 marginLeft="1rem"
               >
                 {Cat?.nombre}
@@ -274,8 +276,8 @@ const CatalogoCompleto = ({ categori }) => {
               {Cat.sub_categorias?.map((subCat) => (
                 <CategoryComponent
                   key={subCat.id}
-                  detalle={subCat.detalle}
-                  articulos={subCat.articulos}
+                Categoria={subCat}
+                 id={subCat.id}
                 />
               ))}
             </div>
@@ -326,27 +328,27 @@ const CatalogoCompleto = ({ categori }) => {
             </Button>
           )}
           <Flex
-            ref={scrollRef}
-            overflowX="scroll"
-            scrollBehavior="smooth"
-            css={{
-              "&::-webkit-scrollbar": {
-                display: "none",
-              },
-              scrollbarWidth: "none",
-              "-ms-overflow-style": "none",
-            }}
-            gap={4}
-            px={4}
-          >
-            {categoris.map((category) => (
-              <CategoryButton
-                key={category.id}
-                name={category.nombre}
-                id={category.id}
-              />
-            ))}
-          </Flex>
+          ref={scrollRef}
+          overflowX="scroll"
+          scrollBehavior="smooth"
+          css={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+            scrollbarWidth: "none",
+            "-ms-overflow-style": "none",
+          }}
+          gap={4}
+          px={4}
+        >
+          {categori?.sub_categorias?.map((category) => (
+            <CategoryButton
+              key={category.id}
+              name={category.nombre}
+              id={category.id}
+            />
+          ))}
+        </Flex>
           {showRightArrow && (
             <Button
               onClick={() => scrollContainer(200)}
@@ -376,13 +378,13 @@ const CatalogoCompleto = ({ categori }) => {
         />
       </InputGroup>
       {searchTerm
-        ? renderSearchResults()
-        : categori?.sub_categorias?.map((subCat) => (
+      ? renderSearchResults()
+      : categori?.sub_categorias?.map((subCat) => (
+          <Box key={subCat.id} id={subCat.id} width="100%">
             <CategoryComponent
-              key={subCat.id}
-              detalle={subCat.detalle}
-              articulos={subCat.articulos}
+              Categoria={subCat}
             />
+          </Box>
           ))}
     </VStack>
   );
