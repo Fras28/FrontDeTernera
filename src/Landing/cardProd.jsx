@@ -10,6 +10,8 @@ const ProductCard = ({ product }) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
+console.log(product, "product id");
+
   return (
     <Box className="card" position="relative">
       {product?.DescPorciento != null || product?.DescPorciento == 0 ? (

@@ -182,7 +182,7 @@ export default function DetalleProducto() {
                   whiteSpace="pre-wrap"
                   wordBreak="break-word"
                 >
-                  {articulo?.detalle.length < 36 ? <Text textAlign={"left"} fontSize="1rem">
+                  {articulo?.detalle?.length < 36 || articulo?.detalle?.length === null ? <Text textAlign={"left"} fontSize="1rem">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue.
                   </Text> : <Text textAlign={"left"}>{articulo?.detalle }</Text>}
                   {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut et massa mi. Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla, mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus. Nullam quis imperdiet augue. */}
