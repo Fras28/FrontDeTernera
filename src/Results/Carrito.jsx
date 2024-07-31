@@ -38,7 +38,7 @@ export default function Carrito() {
   return (
     <ChakraProvider>
       <Box position="relative" minHeight="100vh" bg="#F5F5F5">
-        <VStack spacing={4} p={4} pb="80px">
+        <VStack spacing={4} p={4} pb="180px">
           <BlackBox
             titulo="Mi carrito"
             info="Revisá que estén todos los productos que estás buscando"
