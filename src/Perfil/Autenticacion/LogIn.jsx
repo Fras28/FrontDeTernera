@@ -16,8 +16,8 @@ import {
 
 import { Navigate } from "react-router-dom";
 
-import { loginUser } from "../Redux/Slice";
-import InicioButton from "../Results/InicioButton";
+import { loginUser } from "../../Redux/Slice";
+import InicioButton from "../../Results/InicioButton";
 import SignInBtn from "./signInBtn";
 
 export default function LoginCard() {

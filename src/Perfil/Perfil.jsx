@@ -18,7 +18,7 @@ import TopNav from '../Landing/logoTop';
 import BlackBox from '../Landing/InfoTopBox';
 import BottomNav from '../Landing/BottomNav';
 import { NavLink } from 'react-router-dom';
-import LogInBtn from '../Autenticacion/LogInBtn';
+import LogInBtn from './Autenticacion/LogInBtn';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../Redux/Slice';
 

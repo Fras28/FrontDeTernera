@@ -12,7 +12,6 @@ const Carousel = () => {
   const { categories } = useSelector((state) => state.allData);
   // Obtén todos los artículos de todas las subcategorías
   const CatOfer = categories?.filter((cat) => cat.id === 1);
-  console.log(CatOfer[0]?.sub_categorias, "CatOfer");
   // Extrae todos los artículos de las subcategorías filtradas
   const valoresArticulos = [];
 
@@ -21,7 +20,6 @@ const Carousel = () => {
       valoresArticulos?.push(articulo);
     });
   });
-  console.log(valoresArticulos, "valoresArticulos");
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollLeft += scrollOffset;
     updateArrowVisibility();

@@ -14,7 +14,7 @@ const ProductCard = ({ product }) => {
     return price * (1 - discount / 100);
   };
 
-  console.log(product, "product id");
+
 
   return (
     <Box className="card" position="relative">

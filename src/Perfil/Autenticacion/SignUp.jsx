@@ -20,8 +20,8 @@ import {
   InputRightElement,
 } from '@chakra-ui/react';
 import { CheckIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { registerUser } from '../Redux/Slice';
-import BlackBox from '../Landing/InfoTopBox';
+import { registerUser } from '../../Redux/Slice';
+import BlackBox from '../../Landing/InfoTopBox';
 
 export default function SignupCard() {
   const [firstName, setFirstName] = useState('');

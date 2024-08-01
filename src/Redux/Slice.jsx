@@ -11,6 +11,7 @@ const initialState = {
   articulos: [],
   valores: [],
   cart: [],
+  pedidos:[],
   cartTotal: 0,
   status: "idle",
   error: null,
@@ -23,6 +24,38 @@ export const fetchCategories = createAsyncThunk(
       `${API_BASE}/api/categorias?populate=img&populate=sub_categorias.articulos.valors`
     );
     return response.data.data;
+  }
+);
+
+
+export const fetchPedidosUser = createAsyncThunk(
+  "counter/fetchPedidos",
+  async (_, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState();
+      console.log("Current state:", state); // Log the entire state for debugging
+
+      // Check if user exists in the state
+      if (!state?.allData || !state?.allData?.user) {
+        throw new Error("User not found in state");
+      }
+
+      const userId = state?.allData?.user?.id;
+      console.log("User ID:", userId); // Log the user ID
+
+      if (!userId) {
+        throw new Error("User ID is undefined");
+      }
+
+      const response = await axios.get(
+        `${API_BASE}/api/pedidos-with-user?userId=${userId}`
+      );
+      console.log("API response:", response.data); // Log the API response
+      return response.data.data;
+    } catch (error) {
+      console.error("Error in fetchPedidosUser:", error);
+      return thunkAPI.rejectWithValue(error.message);
+    }
   }
 );
 
@@ -52,7 +85,7 @@ export const loginUser = createAsyncThunk("user/login", async (credentials) => {
   localStorage.setItem("token", token);
 
   const userResponse = await axios.get(
-    `${API_BASE}/api/users/me?populate=role`,
+    `${API_BASE}/api/users/me?populate=role&populate=pedidos`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -62,11 +95,13 @@ export const loginUser = createAsyncThunk("user/login", async (credentials) => {
 
   const userData = userResponse.data;
   const role = userData.role ? userData.role.name : null;
+  const pedidos = userData.pedidos || []; // Add this line to extract pedidos
 
   return {
     ...userData,
     token,
     role,
+    pedidos, // Include pedidos in the returned data
   };
 });
 
@@ -76,7 +111,10 @@ export const logoutUser = createAsyncThunk("user/logout", async () => {
 });
 
 const calculateCartTotal = (cart) => {
-  return cart.reduce((total, item) => total + item.precioFinal * item.quantity, 0);
+  return cart.reduce(
+    (total, item) => total + item.precioFinal * item.quantity,
+    0
+  );
 };
 
 export const counterSlice = createSlice({
@@ -84,8 +122,16 @@ export const counterSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { articleId, name, price, quantity, valor, valorId, precioFinal,discountPercentage } =
-        action.payload;
+      const {
+        articleId,
+        name,
+        price,
+        quantity,
+        valor,
+        valorId,
+        precioFinal,
+        discountPercentage,
+      } = action.payload;
       const existingItem = state.cart.find(
         (item) => item.articleId === articleId && item.valorId === valorId
       );
@@ -186,6 +232,17 @@ export const counterSlice = createSlice({
         state.status = "failed";
         state.error = action.error.message;
       })
+      .addCase(fetchPedidosUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchPedidosUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.pedidos = action.payload;
+      })
+      .addCase(fetchPedidosUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload || "Failed to fetch pedidos";
+      })
 
       .addCase(fetchValor.pending, (state, action) => {
         state.valores = "loading";
@@ -242,6 +299,8 @@ export const {
   removeFromCart,
   updateCartQuantity,
   logout,
+  
+  
 } = counterSlice.actions;
 
 export default counterSlice.reducer;

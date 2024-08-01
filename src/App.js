@@ -7,22 +7,23 @@ import {
   Navigate,
 } from "react-router-dom";
 import Landing from "./Landing/Landing";
-import SimpleCard from "./Autenticacion/LogIn";
-import SignupCard from "./Autenticacion/SignUp";
+import SimpleCard from "./Perfil/Autenticacion/LogIn";
+import SignupCard from "./Perfil/Autenticacion/SignUp";
 import Exito from "./Results/Exito";
 import Error from "./Results/Error";
 import NotFound from "./Results/NotFound";
-import UserProfile from "./Results/Perfil";
+import UserProfile from "./Perfil/Perfil";
 import EditUser from "./Results/EditUser";
 import Ayuda from "./Results/Ayuda";
 import Layout from "./Results/layout";
 import CatalogoFull from "./Catalogo/CatalogoFull";
-import PersonalDataForm from "./Results/PersonalData";
+import PersonalDataForm from "./Perfil/PersonalData";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, fetchValor } from "./Redux/Slice";
 import DetalleProducto from "./Catalogo/ProductDetail";
-import Pedidos from "./Results/Pedidos";
+import Pedidos from "./Perfil/Pedidos";
 import Carrito from "./Results/Carrito";
+import PedidoDetalle from "./Perfil/PedidoDetalle";
 
 function App() {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ function App() {
           <Route path="/UserProfile" element={<UserProfile />} />
           <Route path="/Pedidos" element={<Pedidos />} />
           <Route path="/Carrito" element={<Carrito />} />
-          <Route path="/Pedidos/:id?" element={<Pedidos />} />
+          <Route path="/Pedidos/:id?" element={<PedidoDetalle />} />
           <Route path="/EditUser" element={<EditUser />} />
           <Route path="/Ayuda" element={<Layout child={<Ayuda />} />} />
           <Route path="/ProdDetalle/:id" element={<DetalleProducto />} />

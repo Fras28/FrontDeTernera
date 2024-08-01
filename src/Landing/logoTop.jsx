@@ -9,7 +9,6 @@ import { color } from "framer-motion";
 const TopNav = ({showBackButton = false}) => {
   const {cart,user} = useSelector((state) => state.allData);
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
-console.log(cart, "cartItems");
   const navigate = useNavigate();
 
   const handleBack = () => {
