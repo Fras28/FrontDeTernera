@@ -13,16 +13,17 @@ import {
   Button,
   VStack,
 } from '@chakra-ui/react';
-import { SmallCloseIcon } from '@chakra-ui/icons';
+import { CloseIcon, SmallCloseIcon } from '@chakra-ui/icons';
 import TopNav from '../Landing/logoTop';
 import BlackBox from '../Landing/InfoTopBox';
 import BottomNav from '../Landing/BottomNav';
 import { NavLink } from 'react-router-dom';
 import LogInBtn from '../Autenticacion/LogInBtn';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../Redux/Slice';
 
 export default function UserProfile() {
-
+const dispatch = useDispatch();
 const {user} = useSelector(state=> state.allData)
 
 const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +31,9 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
   </svg>
   )
 
-
+const handleLogOut = ()=>{
+  dispatch(logout())
+}
 
 
   return (
@@ -55,6 +58,8 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
 
         <Button as={NavLink} to={"/PersonalData"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Datos personales {Arrow}</Button>
         <Button as={NavLink} to={"/Pedidos"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Pedidos {Arrow}</Button>
+        <Button onClick={handleLogOut} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Log Out <CloseIcon/></Button>
+     
       </VStack>
 }
     </Flex>
