@@ -12,6 +12,7 @@ import {
   StackDivider,
   useColorModeValue,
   Icon,
+  Radio,
 } from "@chakra-ui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -96,7 +97,7 @@ export default function DetalleProducto() {
   const handleAddToCart = () => {
     if (selectedValor && articulo) {
       if (cantidad > 0) {
-        const discountedPrice = articulo.DescPorciento 
+        const discountedPrice = articulo.DescPorciento
           ? calculateDiscountedPrice(articulo.precioKG, articulo.DescPorciento)
           : articulo.precioKG;
 
@@ -136,7 +137,7 @@ export default function DetalleProducto() {
           py={{ base: 18, md: 24 }}
         >
           <Flex position="relative">
-          <Image
+            <Image
               rounded="md"
               alt="product image"
               src={genericImg}
@@ -145,23 +146,24 @@ export default function DetalleProducto() {
               w="100%"
               h={{ base: "100%", sm: "400px", lg: "500px" }}
             />
-              {articulo?.DescPorciento != null && articulo?.DescPorciento !== 0 && (
-              <Box
-                position="absolute"
-                top="15px"
-                left="15px"
-                bg="#318215"
-                color="white"
-                px="2"
-                py="1"
-                borderRadius="md"
-                fontSize="sm"
-                fontWeight="bold"
-                zIndex="1"
-              >
-                -{articulo.DescPorciento}% OFF
-              </Box>
-            )}
+            {articulo?.DescPorciento != null &&
+              articulo?.DescPorciento !== 0 && (
+                <Box
+                  position="absolute"
+                  top="15px"
+                  left="15px"
+                  bg="#318215"
+                  color="white"
+                  px="2"
+                  py="1"
+                  borderRadius="md"
+                  fontSize="sm"
+                  fontWeight="bold"
+                  zIndex="1"
+                >
+                  -{articulo.DescPorciento}% OFF
+                </Box>
+              )}
             <Box
               position="absolute"
               bottom=".2rem"
@@ -199,12 +201,7 @@ export default function DetalleProducto() {
                     )}{" "}
                     /Kg
                   </Text>
-                  <Text
-                    as="s"
-                    color={"gray.400"}
-                    fontSize="l"
-                    textAlign="left"
-                  >
+                  <Text as="s" color={"gray.400"} fontSize="l" textAlign="left">
                     ${formatPrice(Number(articulo?.precioKG))} /Kg
                   </Text>
                 </Flex>
@@ -310,10 +307,11 @@ export default function DetalleProducto() {
                       maxW="100%"
                     >
                       {articulo?.valors?.data?.map((valor) => (
+                        // Dentro del renderizado de tus botones
                         <ValorsBtn
-                          key={valor.id}
                           valor={valor}
-                          onSelect={handleValorSelect}
+                          isSelected={selectedValor?.id === valor.id}
+                          onSelect={() => setSelectedValor(valor)}
                         />
                       ))}
                     </Flex>
