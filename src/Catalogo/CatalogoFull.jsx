@@ -56,7 +56,7 @@ const CatalogoCompleto = ({ categori }) => {
   const location = useLocation();
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const cati = useSelector((state) => state.allData.categories);
+  const cati = useSelector((state) => state.categories);
   const categoris = cati?.map((cat) => ({ id: cat?.id, nombre: cat?.nombre }));
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -88,7 +88,7 @@ const CatalogoCompleto = ({ categori }) => {
     if (searchTerm.trim() === "") {
       // Mostrar todos los elementos si searchTerm está vacío
       if (categori) {
-        const allItems = categori.sub_categorias.flatMap(
+        const allItems = categori?.sub_categorias?.flatMap(
           (subCat) => subCat.articulos
         );
         setFilteredItems(allItems);
@@ -164,7 +164,7 @@ const CatalogoCompleto = ({ categori }) => {
     </VStack>
   );
 
-  console.log( categori?.sub_categorias, " categori?.sub_categorias");
+  console.log( categori, " categori?.sub_categorias");
 
   const catalogFull = (
     <VStack spacing={4} width="100%">
@@ -212,7 +212,7 @@ const CatalogoCompleto = ({ categori }) => {
             overflowX="scroll"
             scrollBehavior="smooth"
             css={{
-              "&::-webkit-scrollbar": {
+              "&::WebkitScrollbar": {
                 display: "none",
               },
               scrollbarWidth: "none",
@@ -333,7 +333,7 @@ const CatalogoCompleto = ({ categori }) => {
           overflowX="scroll"
           scrollBehavior="smooth"
           css={{
-            "&::-webkit-scrollbar": {
+            "&::WebkitScrollbar": {
               display: "none",
             },
             scrollbarWidth: "none",

@@ -16,7 +16,7 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
 export default function Carrito() {
   const scrollRef = useRef(null);
   const location = useLocation();
-  const { cart, cartTotal  } = useSelector(state => state.allData);
+  const { cart, cartTotal  } = useSelector(state => state);
 
   useEffect(() => {
     if (location.hash) {

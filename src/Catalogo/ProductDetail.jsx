@@ -22,25 +22,29 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import genericImg from "../assets/oferta.jpeg";
 import Carousel from "../Landing/MasVendidos";
 import TopNav from "../Landing/logoTop";
-import { addToCart, removeFromCart } from "../Redux/Slice";
+import { addToCart, agregarArticuloPedido, crearPedido, removeFromCart } from "../Redux/Slice";
 
 export default function DetalleProducto() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const articulo = useSelector((state) =>
-    state.allData?.articulos?.find((art) => art?.id === parseInt(id))
-  );
-  const { cart, categories } = useSelector((state) => state.allData);
+  const pedidoActual = useSelector(state => state.pedidoActual);
+  const { articulos, cart, categories, user } = useSelector((state) => state);
+  const articulo = articulos.find((art) => art.id === parseInt(id));
   const oferta = categories.filter((cat) => cat.id === 1);
-  console.log(oferta[0]?.sub_categorias, "oferta");
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
-  const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
+  const [cantidad, setCantidad] = useState(1); // Estado para la cantidad
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   useEffect(() => {
     updateArrowVisibility();
   }, []);
+console.log(articulo?.precioKG,"articulo precio")
+console.log(articulo?.precioKG*(selectedValor?.attributes.GrsPorcion/1000), "selectedValor.gras")
+console.log(user?.id, "user?.id");
+console.log(cantidad,"cantidad");
+
+
 
   useEffect(() => {
     if (selectedValor) {
@@ -94,31 +98,35 @@ export default function DetalleProducto() {
       }
     }
   };
-  const handleAddToCart = () => {
-    if (selectedValor && articulo) {
-      if (cantidad > 0) {
-        const discountedPrice = articulo.DescPorciento
-          ? calculateDiscountedPrice(articulo.precioKG, articulo.DescPorciento)
-          : articulo.precioKG;
-
-        dispatch(
-          addToCart({
-            articleId: articulo.id,
-            name: articulo.nombre,
-            price: discountedPrice, // Use discounted price
-            quantity: cantidad,
-            valor: selectedValor.attributes.nombre,
-            valorId: selectedValor.id,
-            precioFinal: discountedPrice * selectedValor.attributes.GrsPorcion,
-            discountPercentage: articulo.DescPorciento || 0,
-          })
-        );
-      } else {
-        handleRemoveFromCart();
+  const handleAddToCart = async () => {
+    try {
+      let pedidoId = pedidoActual ? pedidoActual.id : null;
+  
+      if (!pedidoId) {
+        const resultAction = await dispatch(crearPedido(user?.id));
+        if (crearPedido.fulfilled.match(resultAction)) {
+          pedidoId = resultAction.payload.data.id;
+        } else {
+          throw new Error(resultAction.error.message);
+        }
       }
+  
+      const articuloData = {
+        pedidoId: pedidoId,
+        articuloId: articulo.id,
+        nombre: articulo.nombre,
+        precio: articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000),
+        cantidad: cantidad,
+        valorId: selectedValor.id,
+      };
+  
+      await dispatch(agregarArticuloPedido(articuloData));
+      
+      // Actualizar el carrito o realizar otras acciones necesarias
+    } catch (error) {
+      console.error("Error al agregar al carrito:", error.message);
     }
   };
-
   const formatPrice = (price) => {
     if (typeof price !== "number") return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -356,75 +364,73 @@ export default function DetalleProducto() {
             display={"flex"}
             gap={"1rem"}
           >
-            <Flex
-              justify="center"
-              alignItems="center"
-              mb={4}
-              overflow="hidden"
-              borderRadius="full"
-              width="200px"
-              height="50px"
-              bg="black"
-              color="white"
-            >
-              <Button
-                onClick={decrementarCantidad}
-                bg="black"
-                color="white"
-                borderRadius="none"
-                height="100%"
-                width="33%"
-                _hover={{ bg: "gray.800" }}
-                _active={{ bg: "gray.700" }}
-              >
-                -
-              </Button>
-              <Box
-                width="34%"
-                bg="white"
-                height="100%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                border="solid black 2px"
-              >
-                <Text fontSize="lg" color="black" fontWeight="bold">
-                  {cantidad}
-                </Text>
-              </Box>
-              <Button
-                onClick={incrementarCantidad}
-                bg="black"
-                color="white"
-                borderRadius="none"
-                height="100%"
-                width="33%"
-                _hover={{ bg: "gray.800" }}
-                _active={{ bg: "gray.700" }}
-              >
-                +
-              </Button>
-            </Flex>
-            <Button
-              rounded="none"
-              w="full"
-              size="lg"
-              py="7"
-              bg="#CA0017"
-              borderRadius="24px"
-              textTransform="uppercase"
-              color="white"
-              fontWeight="bold"
-              fontSize="1rem"
-              zIndex={"9999"}
-              _hover={{
-                transform: "translateY(2px)",
-                boxShadow: "lg",
-              }}
-              onClick={handleAddToCart}
-            >
-              Agregar al carrito
-            </Button>
+     <Flex
+        alignItems="center"
+        justifyContent="space-between"
+        borderRadius="full"
+        width="200px"
+        height="50px"
+        bg="black"
+        color="white"
+      >
+        <Button
+          onClick={decrementarCantidad}
+          bg="black"
+          color="white"
+          borderRadius="none"
+          height="100%"
+          width="33%"
+          _hover={{ bg: "gray.800" }}
+          _active={{ bg: "gray.700" }}
+        >
+          -
+        </Button>
+        <Box
+          width="34%"
+          bg="white"
+          height="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          border="solid black 2px"
+        >
+          <Text fontSize="lg" color="black" fontWeight="bold">
+            {cantidad}
+          </Text>
+        </Box>
+        <Button
+          onClick={incrementarCantidad}
+          bg="black"
+          color="white"
+          borderRadius="none"
+          height="100%"
+          width="33%"
+          _hover={{ bg: "gray.800" }}
+          _active={{ bg: "gray.700" }}
+        >
+          +
+        </Button>
+      </Flex>
+      <Button
+        rounded="none"
+        w="full"
+        size="lg"
+        py="7"
+        bg="#CA0017"
+        borderRadius="24px"
+        textTransform="uppercase"
+        color="white"
+        fontWeight="bold"
+        fontSize="1rem"
+        zIndex={"9999"}
+        _hover={{
+          transform: "translateY(2px)",
+          boxShadow: "lg",
+        }}
+        onClick={handleAddToCart}
+      >
+        Agregar al carrito
+      </Button>
           </Box>
         )}
       </Container>

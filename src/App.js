@@ -32,7 +32,7 @@ function App() {
     dispatch(fetchValor())
   }, [dispatch]);
 
-  const categorias = useSelector(state => state.allData.categories);
+  const categories = useSelector(state => state.categories);
 
   return (
     <Router>
@@ -58,7 +58,7 @@ function App() {
           <Route path="/PersonalData" element={<PersonalDataForm />} />
           
           {/* Rutas dinámicas para categorías */}
-          {categorias && categorias.map(categoria => (
+          {categories && categories.map(categoria => (
             <Route 
               key={categoria.id}
               path={`/${categoria.nombre}`} 

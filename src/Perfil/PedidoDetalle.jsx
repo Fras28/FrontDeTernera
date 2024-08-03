@@ -10,7 +10,7 @@ export default function PedidoDetalle() {
   const scrollRef = useRef(null);
   const { id } = useParams();
   const location = useLocation();
-  const { pedidos } = useSelector(state => state.allData);
+  const { pedidos } = useSelector(state => state);
   
   console.log(pedidos, "pedidos");
   

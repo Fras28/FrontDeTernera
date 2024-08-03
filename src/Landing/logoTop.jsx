@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { color } from "framer-motion";
 
 const TopNav = ({showBackButton = false}) => {
-  const {cart,user} = useSelector((state) => state.allData);
+  const {cart,user} = useSelector((state) => state);
   const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
   const navigate = useNavigate();
 

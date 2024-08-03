@@ -29,7 +29,7 @@ const OrderBox = ({ date, orderNumber, total }) => (
 
 export default function Pedidos() {
   const dispatch = useDispatch();
-  const { pedidos, user, status, error } = useSelector(state => state.allData);
+  const { pedidos, user, status, error } = useSelector(state => state);
   
   useEffect(() => {
     dispatch(fetchPedidosUser());

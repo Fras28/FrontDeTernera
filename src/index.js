@@ -5,8 +5,9 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 import { Provider } from "react-redux";
-import { extendTheme, ChakraProvider, theme } from "@chakra-ui/react";
-import { store } from "./Redux/Store";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./Redux/Store"; // Asegúrate de ajustar la ruta si es necesario
 
 // 2. Extend the theme to include custom colors, fonts, etc
 const colors = {
@@ -17,13 +18,17 @@ const colors = {
   },
 };
 
+const customTheme = extendTheme({ colors });
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ChakraProvider theme={theme}>
-        <App />
-      </ChakraProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ChakraProvider theme={customTheme}>
+          <App />
+        </ChakraProvider>
+      </PersistGate>
     </Provider>
   </React.StrictMode>
 );
