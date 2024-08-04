@@ -38,23 +38,20 @@ export default function DetalleProducto() {
   useEffect(() => {
     updateArrowVisibility();
   }, []);
-  console.log(articulo?.DescPorciento ,"DESCUENTO")
-console.log(articulo?.precioKG,"articulo precio")
-console.log(articulo?.precioKG*(selectedValor?.attributes.GrsPorcion/1000), "selectedValor.gras")
-console.log(user?.id, "user?.id");
-console.log(cantidad,"cantidad");
+  console.log(cart, pedidoActual?.attributes?.pedido_articulos ,"cart, pedidoActual")
+
 
 
 
 useEffect(() => {
   if (selectedValor) {
-    const existingItem = cart?.find(
+    const existingItem = pedidoActual?.attributes?.pedido_articulos?.find(
       (item) =>
         item.articleId === articulo.id && item.valorId === selectedValor.id
     );
     setCantidad(existingItem ? existingItem.quantity : 0);
   }
-}, [selectedValor, articulo, cart]);
+}, [selectedValor, articulo, pedidoActual]);
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -73,7 +70,7 @@ useEffect(() => {
 
   const handleValorSelect = (valor) => {
     setSelectedValor(valor);
-    const existingItem = cart?.find(
+    const existingItem = pedidoActual?.attributes?.pedido_articulos?.find(
       (item) => item.articleId === articulo.id && item.valorId === valor.id
     );
     setCantidad(existingItem ? existingItem.quantity : 0);

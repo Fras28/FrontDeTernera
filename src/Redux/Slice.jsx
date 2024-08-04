@@ -121,7 +121,7 @@ export const crearPedido = createAsyncThunk(
   "counter/crearPedido",
   async (_, thunkAPI) => {
     const state = thunkAPI.getState();
-    const { token, user, cartTotal } = state;
+    const { token, user } = state;
 
     try {
       const response = await axios.post(
@@ -202,7 +202,7 @@ export const finalizarPedido = createAsyncThunk(
       const response = await axios.put(
         `${API_BASE}/api/pedidos/${pedidoId}`,
         {
-          estado: "completado",
+          estado: "pendiente",
           total:cartTotal
         },
         {
@@ -249,11 +249,23 @@ const calculatePedidoTotal = (pedidoArticulos) => {
 
 export const counterSlice = createSlice({
   name: "counter",
-  initialState,
+  initialState: {
+    pedidoActual: {
+      id: 24,
+      attributes: {
+        createdAt: '2024-08-04T18:29:45.490Z',
+        updatedAt: '2024-08-04T18:29:45.490Z',
+        publishedAt: '2024-08-04T18:29:45.487Z',
+        total: 63750,
+        estado: 'xxxx',
+        pedido_articulos: []
+      }
+    }
+  },
   reducers: {
     addToCart: (state, action) => {
       const { articleId, name, price, quantity, valor, valorId, precioFinal, descuento } = action.payload;
-      
+
       if (!state.pedidoActual) {
         state.pedidoActual = {
           attributes: {
@@ -293,55 +305,37 @@ export const counterSlice = createSlice({
 
       state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
     },
+    
     updateCartQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
-      const item = state?.cart?.find(
-        (item) => item.articleId === articleId && item.valorId === valorId
+      const itemIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
+        item => item.articleId === articleId && item.valorId === valorId
       );
 
-      if (item) {
-        item.quantity = quantity;
-        state.cartTotal = calculateCartTotal(state.cart); // Actualiza el total del carrito
-      }
-    },
-    updateCartItemQuantity: (state, action) => {
-      const { articleId, valorId, quantity } = action.payload;
-      const item = state.cart.find(
-        (item) => item.articleId === articleId && item.valorId === valorId
-      );
-
-      if (item) {
-        if (quantity <= 0) {
-          state.cart = state.cart.filter(
-            (item) => item.articleId !== articleId || item.valorId !== valorId
-          );
+      if (itemIndex !== -1) {
+        if (quantity === 0 || quantity === null) {
+          // Eliminar el artículo si la cantidad es 0 o null
+          state.pedidoActual.attributes.pedido_articulos.splice(itemIndex, 1);
         } else {
-          item.quantity = quantity;
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].quantity = quantity;
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].subtotal = quantity * state.pedidoActual.attributes.pedido_articulos[itemIndex].precioFinal;
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].updatedAt = new Date().toISOString();
         }
+        state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
       }
-      state.cartTotal = calculateCartTotal(state.cart);
     },
+    
     removeFromCart: (state, action) => {
       const { articleId, valorId } = action.payload;
-      state.cart = state.cart.filter(
-        (item) => !(item.articleId === articleId && item.valorId === valorId)
-      );
-      state.cartTotal = calculateCartTotal(state.cart);
-
       if (state.pedidoActual) {
-        state.pedidoActual.attributes.pedido_articulos =
-          state.pedidoActual.attributes.pedido_articulos.filter(
-            (item) =>
-              !(item.articleId === articleId && item.valorId === valorId)
-          );
-        state.pedidoActual.attributes.total = calculatePedidoTotal(
-          state.pedidoActual.attributes.pedido_articulos
+        state.pedidoActual.attributes.pedido_articulos = state.pedidoActual.attributes.pedido_articulos.filter(
+          item => !(item.articleId === articleId && item.valorId === valorId)
         );
+        state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
       }
     },
+    
     clearCart: (state) => {
-      state.cart = [];
-      state.cartTotal = 0;
       if (state.pedidoActual) {
         state.pedidoActual.attributes.pedido_articulos = [];
         state.pedidoActual.attributes.total = 0;
@@ -505,7 +499,6 @@ export const counterSlice = createSlice({
 export const {
   addToCart,
   updateCartQuantity,
-  updateCartItemQuantity,
   removeFromCart,
   clearCart,
 } = counterSlice.actions;
