@@ -158,24 +158,61 @@ export const agregarArticuloPedido = createAsyncThunk(
     const { token } = thunkAPI.getState();
     
     try {
-      const response = await axios.post(`${API_BASE}/api/pedido-articulos`, 
-        {
-          data: {
-            pedido: pedidoId,
-            articulo: articuloId,
-            valor: valorId,
-            cantidad,
-            precio_unitario: precio,
-            subtotal: cantidad * precio,
-          }
-        },
+      // Primero, buscar si ya existe un artículo en el pedido con los mismos IDs
+      const existingArticleResponse = await axios.get(
+        `${API_BASE}/api/pedido-articulos?filters[pedido][id]=${pedidoId}&filters[articulo][id]=${articuloId}&filters[valor][id]=${valorId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      return response.data;
+
+      if (existingArticleResponse.data.data.length > 0) {
+        // Si existe, actualizar la cantidad
+        const existingArticle = existingArticleResponse.data.data[0];
+        const updatedCantidad = existingArticle.attributes.cantidad + cantidad;
+        const updatedSubtotal = updatedCantidad * precio;
+
+        const updateResponse = await axios.put(
+          `${API_BASE}/api/pedido-articulos/${existingArticle.id}`,
+          {
+            data: {
+              cantidad: updatedCantidad,
+              subtotal: updatedSubtotal,
+            }
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        return updateResponse.data;
+      } else {
+        // Si no existe, crear un nuevo artículo en el pedido
+        const createResponse = await axios.post(
+          `${API_BASE}/api/pedido-articulos`, 
+          {
+            data: {
+              pedido: pedidoId,
+              articulo: articuloId,
+              valor: valorId,
+              cantidad,
+              precio_unitario: precio,
+              subtotal: cantidad * precio,
+            }
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        return createResponse.data;
+      }
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -207,10 +244,11 @@ export const finalizarPedido = createAsyncThunk(
 
 export const obtenerHistorialPedidos = createAsyncThunk(
   "counter/obtenerHistorial",
-  async (usuarioId, thunkAPI) => {
+  async (_, thunkAPI) => {
+    const { user } = thunkAPI.getState();    
     try {
-      const response = await axios.get(`${API_BASE}/api/pedidos?usuario_id=${usuarioId}&populate=pedido_articulos.articulo&populate=pedido_articulos.valor`);
-      return response.data;
+      const response = await axios.get(`${API_BASE}/api/pedidos?filters[user][id][$eq]=${user?.id}&populate=pedido_articulos.articulo&populate=pedido_articulos.valor`);
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -398,6 +436,7 @@ export const counterSlice = createSlice({
         state.token = null;
         state.role = null; 
         state.pedidoActual = null;
+        state.historial = null;
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.status = "failed";
