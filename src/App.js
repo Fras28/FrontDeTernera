@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories, fetchValor } from "./Redux/Slice";
 import DetalleProducto from "./Catalogo/ProductDetail";
 import Pedidos from "./Perfil/Pedidos";
-import Carrito from "./Results/Carrito";
+import Carrito from "./Carrito/Carrito";
 import PedidoDetalle from "./Perfil/PedidoDetalle";
 
 function App() {

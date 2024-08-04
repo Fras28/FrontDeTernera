@@ -1,12 +1,27 @@
 import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
 import { removeFromCart, updateCartQuantity } from "../Redux/Slice";
-import { useDispatch } from "react-redux";
-import imgArt from "../assets/articulos.png"
+import { useDispatch, useSelector } from "react-redux";
+import imgArt from "../assets/articulos.png";
 
 const BagCard = ({ producto }) => {
   const dispatch = useDispatch();
+  const {articulos,valores} = useSelector(state => state)
+  const medida = valores?.find((art) => art.id === producto?.valorId);
+  const Descuento = articulos?.find((art) => art.id === producto?.articleId);
+  console.log(medida?.attributes?.nombre,"producto formato");
+  
+  const artDesct= Descuento?.DescPorciento;
+  const articulo = producto?.attributes?.articulo;
+  const valor = producto?.attributes?.valor;
+  const valorNombre = medida?.attributes?.nombre;
+
   const [cantidad, setCantidad] = useState(producto?.quantity);
+
+  useEffect(() => {
+    setCantidad(producto?.quantity
+      ); // Actualiza la cantidad si el producto cambia
+  }, [producto]);
 
   const handleRemoveFromCart = () => {
     if (producto) {
@@ -33,20 +48,18 @@ const BagCard = ({ producto }) => {
   };
 
   const decrementarCantidad = () => {
-    if (cantidad > 0) {
+    if (cantidad > 1) {
       const newQuantity = cantidad - 1;
-      if (newQuantity === 0) {
-        handleRemoveFromCart();
-      } else {
-        setCantidad(newQuantity);
-        dispatch(
-          updateCartQuantity({
-            articleId: producto.articleId,
-            valorId: producto.valorId,
-            quantity: newQuantity,
-          })
-        );
-      }
+      setCantidad(newQuantity);
+      dispatch(
+        updateCartQuantity({
+          articleId: producto.articleId,
+          valorId: producto.valorId,
+          quantity: newQuantity,
+        })
+      );
+    } else if (cantidad === 1) {
+      handleRemoveFromCart(); // Remover del carrito si cantidad llega a 0
     }
   };
 
@@ -54,42 +67,65 @@ const BagCard = ({ producto }) => {
     <HStack
       w="100%"
       p={4}
-       borderBottom="solid 1px lightgrey"
-      display="flex"
-      justifyContent="space-between"
+      borderBottom="solid 1px lightgrey"
+      spacing={0}
     >
-      <Flex height={"100%"} >
-        <img src={imgArt} alt="imgArt"  style={{height:"68px"}} />
+      {/* Columna 1: Imagen */}
+      <Flex
+        flex={1} // Hace que esta columna ocupe 1/3 del espacio disponible
+        justifyContent="center"
+        alignItems="center"
+      >
+        <img src={imgArt} alt="imgArt" style={{ height: "68px" }} />
       </Flex>
-      <Flex justifyContent="space-between" alignItems="center">
-  <VStack align="start" spacing={1} gap="0">
+  
+      {/* Columna 2: Información del Producto */}
+      <Flex
+        flex={1} // Hace que esta columna ocupe 1/3 del espacio disponible
+        flexDirection="column"
+        justifyContent="center"
+        alignItems="start"
+      >
+        <VStack align="start" spacing={1} gap="0">
           <Box bg="black" color="white" px={2} py={1} borderRadius="full">
-            <Text fontSize="xs">{producto?.valor}</Text>
+            <Text fontSize="xs">{valorNombre}</Text>
           </Box>
-          <Text fontWeight="medium" fontSize="16px">{producto?.name}</Text>
-          <Text 
-            fontWeight="bold" 
-            color={producto.discountPercentage > 0 ? "green.500" : "inherit"}
-          >
-            ${producto?.precioFinal.toFixed(2)} /u.
+          <Text fontWeight="medium" fontSize="16px">
+            {Descuento?.nombre}
           </Text>
-          {producto.discountPercentage > 0 && (
-            <Text fontSize="xs" color="green.500" style={{textAlign:"left" ,  textWrap: "nowrap"}} >
-              {producto.discountPercentage}% descuento aplicado
+          <Text
+            fontWeight="bold"
+            color={
+              artDesct > 0
+                ? "green.500"
+                : "inherit"
+            }
+          >
+            ${producto?.precio_unitario}/u.
+          </Text>
+          {artDesct > 0 && (
+            <Text
+              fontSize="xs"
+              color="green.500"
+              style={{ textAlign: "left", textWrap: "nowrap" }}
+            >
+              {artDesct}% descuento aplicado
             </Text>
           )}
         </VStack>
       </Flex>
+  
+      {/* Columna 3: Controles de Cantidad */}
       <Flex
+        flex={1} // Hace que esta columna ocupe 1/3 del espacio disponible
         justify="center"
         alignItems="center"
         mb={4}
         overflow="hidden"
         borderRadius="full"
-        width="100px"
-        height="40px"
         bg="black"
         color="white"
+        width="100%"
       >
         <Button
           onClick={decrementarCantidad}
@@ -104,14 +140,13 @@ const BagCard = ({ producto }) => {
           -
         </Button>
         <Box
-          width="34%"
           bg="white"
-          height="100%"
+          height="46px"
           display="flex"
           alignItems="center"
           justifyContent="center"
           border="solid black 2px"
-          padding="0 .5rem"
+          width="33%"
         >
           <Text fontSize="lg" color="black" fontWeight="bold">
             {cantidad}
@@ -132,6 +167,6 @@ const BagCard = ({ producto }) => {
       </Flex>
     </HStack>
   );
-};
+}  
 
 export default BagCard;

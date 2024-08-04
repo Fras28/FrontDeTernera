@@ -22,23 +22,23 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import genericImg from "../assets/oferta.jpeg";
 import Carousel from "../Landing/MasVendidos";
 import TopNav from "../Landing/logoTop";
-import { addToCart, agregarArticuloPedido, crearPedido, removeFromCart } from "../Redux/Slice";
+import { addToCart, agregarArticuloPedido, crearPedido} from "../Redux/Slice";
 
 export default function DetalleProducto() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const pedidoActual = useSelector(state => state.pedidoActual);
-  const { articulos, cart, categories, user } = useSelector((state) => state);
+  const { articulos, cart, pedidoActual, user } = useSelector((state) => state);
   const articulo = articulos.find((art) => art.id === parseInt(id));
-  const oferta = categories.filter((cat) => cat.id === 1);
+  // const oferta = categories.filter((cat) => cat.id === 1);
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
-  const [cantidad, setCantidad] = useState(1); // Estado para la cantidad
+  const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   useEffect(() => {
     updateArrowVisibility();
   }, []);
+  console.log(articulo?.DescPorciento ,"DESCUENTO")
 console.log(articulo?.precioKG,"articulo precio")
 console.log(articulo?.precioKG*(selectedValor?.attributes.GrsPorcion/1000), "selectedValor.gras")
 console.log(user?.id, "user?.id");
@@ -46,15 +46,15 @@ console.log(cantidad,"cantidad");
 
 
 
-  useEffect(() => {
-    if (selectedValor) {
-      const existingItem = cart?.find(
-        (item) =>
-          item.articleId === articulo.id && item.valorId === selectedValor.id
-      );
-      setCantidad(existingItem ? existingItem.quantity : 0);
-    }
-  }, [selectedValor, articulo, cart]);
+useEffect(() => {
+  if (selectedValor) {
+    const existingItem = cart?.find(
+      (item) =>
+        item.articleId === articulo.id && item.valorId === selectedValor.id
+    );
+    setCantidad(existingItem ? existingItem.quantity : 0);
+  }
+}, [selectedValor, articulo, cart]);
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -73,17 +73,25 @@ console.log(cantidad,"cantidad");
 
   const handleValorSelect = (valor) => {
     setSelectedValor(valor);
+    const existingItem = cart?.find(
+      (item) => item.articleId === articulo.id && item.valorId === valor.id
+    );
+    setCantidad(existingItem ? existingItem.quantity : 0);
   };
 
-  const handleRemoveFromCart = () => {
+  const handleQuantityChange = (newQuantity) => {
+    setCantidad(newQuantity);
     if (selectedValor && articulo) {
-      dispatch(
-        removeFromCart({
-          articleId: articulo.id,
-          valorId: selectedValor.id,
-        })
-      );
-      setCantidad(0); // Reinicia la cantidad a 0
+      dispatch(addToCart({
+        articleId: articulo.id,
+        name: articulo.nombre,
+        price: articulo.precioKG,
+        quantity: newQuantity,
+        valor: selectedValor.attributes.nombre,
+        valorId: selectedValor.id,
+        descuento:articulo?.DescPorciento,
+        precioFinal: articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000),
+      }));
     }
   };
 
@@ -92,41 +100,63 @@ console.log(cantidad,"cantidad");
     if (cantidad > 0) {
       const newQuantity = cantidad - 1;
       if (newQuantity === 0) {
-        handleRemoveFromCart(); // Eliminar del carrito si la cantidad llega a 0
-      } else {
+        setCantidad(newQuantity);// Eliminar del carrito si la cantidad llega a 0
+      } 
+      else {
         setCantidad(newQuantity);
       }
     }
   };
+ 
   const handleAddToCart = async () => {
+    if (!selectedValor) {
+      alert('Por favor, seleccione una opción');
+      return;
+    }
+
     try {
       let pedidoId = pedidoActual ? pedidoActual.id : null;
-  
+
       if (!pedidoId) {
-        const resultAction = await dispatch(crearPedido(user?.id));
+        const resultAction = await dispatch(crearPedido());
         if (crearPedido.fulfilled.match(resultAction)) {
-          pedidoId = resultAction.payload.data.id;
+          pedidoId = resultAction.payload.id;
         } else {
           throw new Error(resultAction.error.message);
         }
       }
-  
+
+      const precio = articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000);
       const articuloData = {
-        pedidoId: pedidoId,
+        pedidoId,
         articuloId: articulo.id,
-        nombre: articulo.nombre,
-        precio: articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000),
-        cantidad: cantidad,
         valorId: selectedValor.id,
+        cantidad,
+        precio,
       };
-  
-      await dispatch(agregarArticuloPedido(articuloData));
+
+      const resultAction = await dispatch(agregarArticuloPedido(articuloData));
       
-      // Actualizar el carrito o realizar otras acciones necesarias
+      if (agregarArticuloPedido.fulfilled.match(resultAction)) {
+        dispatch(addToCart({
+          articleId: articulo.id,
+          name: articulo.nombre,
+          price: articulo.precioKG,
+          quantity: cantidad,
+          valor: selectedValor.attributes.nombre,
+          valorId: selectedValor.id,
+          precioFinal: precio,
+        }));
+        alert('Producto agregado al carrito');
+      } else {
+        throw new Error(resultAction.error.message);
+      }
     } catch (error) {
-      console.error("Error al agregar al carrito:", error.message);
+      console.error('Error al agregar al carrito:', error.message);
+      alert('Error al agregar al carrito');
     }
   };
+
   const formatPrice = (price) => {
     if (typeof price !== "number") return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
@@ -364,53 +394,37 @@ console.log(cantidad,"cantidad");
             display={"flex"}
             gap={"1rem"}
           >
-     <Flex
-        alignItems="center"
-        justifyContent="space-between"
-        borderRadius="full"
-        width="200px"
-        height="50px"
+        <Flex alignItems="center" justifyContent="space-between" borderRadius="full" width="200px" height="50px" bg="black" color="white" overflow="hidden">
+      <Button
+        onClick={decrementarCantidad}
         bg="black"
         color="white"
+        borderRadius="none"
+        height="100%"
+        width="33%"
+        _hover={{ bg: "gray.800" }}
+        _active={{ bg: "gray.700" }}
       >
-        <Button
-          onClick={decrementarCantidad}
-          bg="black"
-          color="white"
-          borderRadius="none"
-          height="100%"
-          width="33%"
-          _hover={{ bg: "gray.800" }}
-          _active={{ bg: "gray.700" }}
-        >
-          -
-        </Button>
-        <Box
-          width="34%"
-          bg="white"
-          height="100%"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          border="solid black 2px"
-        >
-          <Text fontSize="lg" color="black" fontWeight="bold">
-            {cantidad}
-          </Text>
-        </Box>
-        <Button
-          onClick={incrementarCantidad}
-          bg="black"
-          color="white"
-          borderRadius="none"
-          height="100%"
-          width="33%"
-          _hover={{ bg: "gray.800" }}
-          _active={{ bg: "gray.700" }}
-        >
-          +
-        </Button>
-      </Flex>
+        -
+      </Button>
+      <Box width="34%" bg="white" height="100%" display="flex" alignItems="center" justifyContent="center" border="solid black 2px">
+        <Text fontSize="lg" color="black" fontWeight="bold">
+          {cantidad}
+        </Text>
+      </Box>
+      <Button
+        onClick={incrementarCantidad}
+        bg="black"
+        color="white"
+        borderRadius="none"
+        height="100%"
+        width="33%"
+        _hover={{ bg: "gray.800" }}
+        _active={{ bg: "gray.700" }}
+      >
+        +
+      </Button>
+    </Flex>
       <Button
         rounded="none"
         w="full"

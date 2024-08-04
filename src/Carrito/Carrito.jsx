@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { Box, Text, VStack, Flex, ChakraProvider, Button } from "@chakra-ui/react";
 import BlackBox from "../Landing/InfoTopBox";
-import BagCard from "../Carrito/BagCard";
+import BagCard from "./BagCard";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { width } from "@fortawesome/free-solid-svg-icons/fa0";
@@ -16,8 +16,14 @@ const Arrow = (<svg width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns
 export default function Carrito() {
   const scrollRef = useRef(null);
   const location = useLocation();
-  const { cart, cartTotal  } = useSelector(state => state);
+  const { articulos,pedidoActual, cartTotal, historial, cart  } = useSelector(state => state);
 
+  const Pedido = historial?.reduce((maxPedido, currentPedido) => {
+    return currentPedido.id > (maxPedido?.id || 0) ? currentPedido : maxPedido;
+  }, null);
+
+  console.log(pedidoActual?.attributes?.pedido_articulos,"pedidoActual");
+  
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace("#", "");
@@ -40,12 +46,12 @@ export default function Carrito() {
       <Box position="relative" minHeight="100vh" bg="#F5F5F5">
         <VStack spacing={4} p={4} pb="180px">
           <BlackBox
-            titulo="Mi carrito"
+            titulo={`Mi carrito #${pedidoActual?.id}`}
             info="Revisá que estén todos los productos que estás buscando"
             showBackButton={true}
           />
           <VStack w="100%" spacing={0}>
-            {cart?.map((product, index) => (
+            {pedidoActual?.attributes?.pedido_articulos.map((product, index) => (
               <BagCard key={index} producto={product} />
             ))}
           </VStack>
@@ -63,7 +69,7 @@ export default function Carrito() {
         <Flex justifyContent="flex-start" alignItems="center" gap=".4rem">
           <Text fontSize="24px" fontWeight="bold">Total:</Text>
           <Text fontSize="24px" fontWeight="bold">$</Text>
-          <Text fontSize="24px" fontWeight="bold">{cartTotal.toFixed(2)}</Text>
+          <Text fontSize="24px" fontWeight="bold">{pedidoActual?.attributes?.total?.toFixed(2)}</Text>
         </Flex>
         <Button as={NavLink} to="" w="100%" borderRadius={"24px"} bgColor="#CA0017" color="white" fontSize="1rem" height="3rem">
           Continuar

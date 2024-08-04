@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "../assets/LogoDeTernera.png";
 import { border, Button, Image, Img, VStack } from "@chakra-ui/react";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -7,8 +7,14 @@ import { useSelector } from "react-redux";
 import { color } from "framer-motion";
 
 const TopNav = ({showBackButton = false}) => {
-  const {cart,user} = useSelector((state) => state);
-  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const {pedidoActual,user} = useSelector((state) => state);
+  const totalQuantity = pedidoActual?.attributes?.pedido_articulos?.reduce((sum, item) => {
+    // Asegúrate de convertir `quantity` a un número y manejar el caso de `null`
+    const quantity = parseInt(item.quantity) || 0;
+    return sum + quantity;
+  }, 0);
+
+  
   const navigate = useNavigate();
 
   const handleBack = () => {
@@ -41,7 +47,7 @@ const TopNav = ({showBackButton = false}) => {
           {user? <p>Hola,{user.username?.split(" ")[0]}!</p>:null }
           <div style={styles.cartInfo}>
             <NavLink to="/carrito">{carrito}</NavLink>
-            <span style={styles.counter}>{totalQuantity}</span>
+            <span style={styles.counter}>{totalQuantity?totalQuantity:0 }</span>
           </div>
           </div>
         </nav>

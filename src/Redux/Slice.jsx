@@ -117,27 +117,22 @@ export const logoutUser = createAsyncThunk("user/logout", async () => {
   return null;
 });
 
-
-
 export const crearPedido = createAsyncThunk(
   "counter/crearPedido",
   async (_, thunkAPI) => {
     const state = thunkAPI.getState();
-    const { token, pedidoActual, user } = state;
-    
-    if (pedidoActual) {
-      return pedidoActual;
-    }
-    
+    const { token, user, cartTotal } = state;
+
     try {
-      const response = await axios.post(`${API_BASE}/api/pedidos`, 
+      const response = await axios.post(
+        `${API_BASE}/api/pedidos`,
         {
           data: {
-              user: {id:user.id},
-              comercio:{id:1},
-              estado: "pendiente",
-              total: 0,
-          }
+            user: { id: user.id },
+            comercio: { id: 1 },
+            estado: "xxxx",
+            total: 0,
+          },
         },
         {
           headers: {
@@ -145,7 +140,7 @@ export const crearPedido = createAsyncThunk(
           },
         }
       );
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -154,13 +149,25 @@ export const crearPedido = createAsyncThunk(
 
 export const agregarArticuloPedido = createAsyncThunk(
   "counter/agregarArticuloPedido",
-  async ({ pedidoId, articuloId, valorId, cantidad, precio }, thunkAPI) => {
+  async (
+    { pedidoId, articuloId, valorId, cantidad, precio, nombre, valor, descuento },
+    thunkAPI
+  ) => {
     const { token } = thunkAPI.getState();
-    
+
     try {
-      // Primero, buscar si ya existe un artículo en el pedido con los mismos IDs
-      const existingArticleResponse = await axios.get(
-        `${API_BASE}/api/pedido-articulos?filters[pedido][id]=${pedidoId}&filters[articulo][id]=${articuloId}&filters[valor][id]=${valorId}`,
+      const response = await axios.post(
+        `${API_BASE}/api/pedido-articulos`,
+        {
+          data: {
+            pedido: pedidoId,
+            articulo: articuloId,
+            valor: valorId,
+            cantidad,
+            precio_unitario: precio,
+            subtotal: cantidad * precio,
+          },
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -168,51 +175,18 @@ export const agregarArticuloPedido = createAsyncThunk(
         }
       );
 
-      if (existingArticleResponse.data.data.length > 0) {
-        // Si existe, actualizar la cantidad
-        const existingArticle = existingArticleResponse.data.data[0];
-        const updatedCantidad = existingArticle.attributes.cantidad + cantidad;
-        const updatedSubtotal = updatedCantidad * precio;
-
-        const updateResponse = await axios.put(
-          `${API_BASE}/api/pedido-articulos/${existingArticle.id}`,
-          {
-            data: {
-              cantidad: updatedCantidad,
-              subtotal: updatedSubtotal,
-            }
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return updateResponse.data;
-      } else {
-        // Si no existe, crear un nuevo artículo en el pedido
-        const createResponse = await axios.post(
-          `${API_BASE}/api/pedido-articulos`, 
-          {
-            data: {
-              pedido: pedidoId,
-              articulo: articuloId,
-              valor: valorId,
-              cantidad,
-              precio_unitario: precio,
-              subtotal: cantidad * precio,
-            }
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        return createResponse.data;
-      }
+      // Combine server response with local data
+      return {
+        id: response.data.data.id,
+        articleId: articuloId,
+        name: nombre,
+        price: precio,
+        quantity: cantidad,
+        valor: valor,
+        valorId: valorId,
+        precioFinal: precio,
+        ...response.data.data.attributes,
+      };
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
@@ -222,12 +196,14 @@ export const agregarArticuloPedido = createAsyncThunk(
 export const finalizarPedido = createAsyncThunk(
   "counter/finalizarPedido",
   async (pedidoId, thunkAPI) => {
-    const { token } = thunkAPI.getState();
-    
+    const { token,cartTotal } = thunkAPI.getState();
+
     try {
-      const response = await axios.put(`${API_BASE}/api/pedidos/${pedidoId}`, 
+      const response = await axios.put(
+        `${API_BASE}/api/pedidos/${pedidoId}`,
         {
-          estado: 'completado',
+          estado: "completado",
+          total:cartTotal
         },
         {
           headers: {
@@ -245,9 +221,11 @@ export const finalizarPedido = createAsyncThunk(
 export const obtenerHistorialPedidos = createAsyncThunk(
   "counter/obtenerHistorial",
   async (_, thunkAPI) => {
-    const { user } = thunkAPI.getState();    
+    const { user } = thunkAPI.getState();
     try {
-      const response = await axios.get(`${API_BASE}/api/pedidos?filters[user][id][$eq]=${user?.id}&populate=pedido_articulos.articulo&populate=pedido_articulos.valor`);
+      const response = await axios.get(
+        `${API_BASE}/api/pedidos?filters[user][id][$eq]=${user?.id}&populate=pedido_articulos.articulo&populate=pedido_articulos.valor`
+      );
       return response.data.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
@@ -257,7 +235,14 @@ export const obtenerHistorialPedidos = createAsyncThunk(
 
 const calculateCartTotal = (cart) => {
   return cart.reduce(
-    (total, item) => total + item.precioFinal * item.quantity,
+    (total, item) => total + item.subtotal,
+    0
+  );
+};
+
+const calculatePedidoTotal = (pedidoArticulos) => {
+  return pedidoArticulos.reduce(
+    (total, articulo) => total + articulo.subtotal,
     0
   );
 };
@@ -267,23 +252,32 @@ export const counterSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const {
-        articleId,
-        name,
-        price,
-        quantity,
-        valor,
-        valorId,
-        precioFinal,
-        discountPercentage,
-      } = action.payload;
-      const existingItem = state.cart.find(
-        (item) => item.articleId === articleId && item.valorId === valorId
+      const { articleId, name, price, quantity, valor, valorId, precioFinal, descuento } = action.payload;
+      
+      if (!state.pedidoActual) {
+        state.pedidoActual = {
+          attributes: {
+            pedido_articulos: [],
+            total: 0
+          }
+        };
+      }
+
+      const existingItemIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
+        item => item.articleId === articleId && item.valorId === valorId
       );
-      if (existingItem) {
-        existingItem.quantity = quantity;
+
+      const subtotal = quantity * precioFinal;
+
+      if (existingItemIndex !== -1) {
+        state.pedidoActual.attributes.pedido_articulos[existingItemIndex] = {
+          ...state.pedidoActual.attributes.pedido_articulos[existingItemIndex],
+          quantity,
+          subtotal,
+          updatedAt: new Date().toISOString()
+        };
       } else {
-        state.cart.push({
+        state.pedidoActual.attributes.pedido_articulos.push({
           articleId,
           name,
           price,
@@ -291,20 +285,24 @@ export const counterSlice = createSlice({
           valor,
           valorId,
           precioFinal,
-          discountPercentage,
+          subtotal,
+          descuento,
+          updatedAt: new Date().toISOString()
         });
       }
-      state.cartTotal = calculateCartTotal(state.cart);
+
+      state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
     },
     updateCartQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
-      const item = state.cart.find(
+      const item = state?.cart?.find(
         (item) => item.articleId === articleId && item.valorId === valorId
       );
+
       if (item) {
         item.quantity = quantity;
+        state.cartTotal = calculateCartTotal(state.cart); // Actualiza el total del carrito
       }
-      state.cartTotal = calculateCartTotal(state.cart);
     },
     updateCartItemQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
@@ -324,20 +322,35 @@ export const counterSlice = createSlice({
       state.cartTotal = calculateCartTotal(state.cart);
     },
     removeFromCart: (state, action) => {
+      const { articleId, valorId } = action.payload;
       state.cart = state.cart.filter(
-        (item) =>
-          item.articleId !== action.payload.articleId ||
-          item.valorId !== action.payload.valorId
+        (item) => !(item.articleId === articleId && item.valorId === valorId)
       );
       state.cartTotal = calculateCartTotal(state.cart);
+
+      if (state.pedidoActual) {
+        state.pedidoActual.attributes.pedido_articulos =
+          state.pedidoActual.attributes.pedido_articulos.filter(
+            (item) =>
+              !(item.articleId === articleId && item.valorId === valorId)
+          );
+        state.pedidoActual.attributes.total = calculatePedidoTotal(
+          state.pedidoActual.attributes.pedido_articulos
+        );
+      }
     },
     clearCart: (state) => {
       state.cart = [];
       state.cartTotal = 0;
+      if (state.pedidoActual) {
+        state.pedidoActual.attributes.pedido_articulos = [];
+        state.pedidoActual.attributes.total = 0;
+      }
     },
   },
   extraReducers: (builder) => {
     builder
+
       // Fetch Categories
       .addCase(fetchCategories.pending, (state) => {
         state.status = "loading";
@@ -360,14 +373,14 @@ export const counterSlice = createSlice({
             })
           ),
         }));
-        
+
         // Extraer todos los artículos de todas las categorías y subcategorías
-        state.articulos = state.categories.flatMap(category => 
-          category.sub_categorias.flatMap(subCategory => 
-            subCategory.articulos
+        state.articulos = state.categories.flatMap((category) =>
+          category.sub_categorias.flatMap(
+            (subCategory) => subCategory.articulos
           )
         );
-        
+
         console.log("Artículos cargados:", state.articulos);
       })
       .addCase(fetchCategories.rejected, (state, action) => {
@@ -434,7 +447,9 @@ export const counterSlice = createSlice({
         state.status = "idle";
         state.user = null;
         state.token = null;
-        state.role = null; 
+        state.role = null;
+        state.cart = null;
+        state.cartTotal=0;
         state.pedidoActual = null;
         state.historial = null;
       })
@@ -444,15 +459,24 @@ export const counterSlice = createSlice({
       })
       // Crear Pedido
       .addCase(crearPedido.fulfilled, (state, action) => {
-        state.pedidoActual = action.payload.data;
-        state.status = 'succeeded';
+        state.pedidoActual = action.payload;
+        state.pedidoActual.attributes.total = 0;
+        state.pedidoActual.attributes.pedido_articulos = [];
       })
       .addCase(agregarArticuloPedido.fulfilled, (state, action) => {
         if (state.pedidoActual) {
-          if (!state.pedidoActual.attributes.pedido_articulos) {
-            state.pedidoActual.attributes.pedido_articulos = [];
+          const newArticulo = action.payload;
+          const existingIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
+            item => item.articleId === newArticulo.articleId && item.valorId === newArticulo.valorId
+          );
+
+          if (existingIndex !== -1) {
+            state.pedidoActual.attributes.pedido_articulos[existingIndex] = newArticulo;
+          } else {
+            state.pedidoActual.attributes.pedido_articulos.push(newArticulo);
           }
-          state.pedidoActual.attributes.pedido_articulos.push(action.payload.data);
+
+          state.pedidoActual.attributes.total = calculatePedidoTotal(state.pedidoActual.attributes.pedido_articulos);
         }
       })
       // Finalizar Pedido
@@ -465,13 +489,13 @@ export const counterSlice = createSlice({
       // Obtener Historial Pedidos
       .addCase(obtenerHistorialPedidos.fulfilled, (state, action) => {
         state.historial = action.payload;
-        state.status = 'succeeded';
+        state.status = "succeeded";
       })
       // Generic error handler
       .addMatcher(
-        (action) => action.type.endsWith('/rejected'),
+        (action) => action.type.endsWith("/rejected"),
         (state, action) => {
-          state.status = 'failed';
+          state.status = "failed";
           state.error = action.payload || action.error.message;
         }
       );
@@ -487,4 +511,3 @@ export const {
 } = counterSlice.actions;
 
 export default counterSlice.reducer;
-
