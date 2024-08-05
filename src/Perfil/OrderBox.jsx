@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Box, Text, Flex, Button, VStack, HStack } from '@chakra-ui/react';
 
-const OrderBox = ({ date, orderNumber,total, items, key }) => {
+const OrderBox = ({ date, orderNumber, total, items, key }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
-  const backgroundColor = key % 2 === 0 ? 'gray.100' : 'white'; // Fondo gris claro si la key es par, blanco si es impar
-console.log(items,"items");
+  const backgroundColor = key % 2 === 0 ? 'gray.400' : 'white';
 
   return (
     <Box 
@@ -56,13 +55,28 @@ console.log(items,"items");
         </HStack>
       </Flex>
       {isExpanded && (
-        <Box p={4} borderTop="1px solid #E2E8F0">
+        <Box p={2} borderTop="1px solid #E2E8F0">
+            <Flex 
+                justify="space-between" 
+                p={0}
+                borderBottom="1px black solid"
+              >
+                <Text fontSize="sm" w="50%">Articulo</Text>
+                <Text fontSize="sm" >cantindad</Text>
+                <Text fontSize="sm" w="30%">valor</Text>
+              </Flex>
           <VStack align="stretch" spacing={2}>
             {items.map((item, index) => (
-              <Flex key={index} justify="space-between">
-                <Text>{item?.attributes?.articulo?.data?.attributes?.nombre} /{item.attributes.valor.data.attributes.nombre}</Text>
-                <Text>{item.attributes.cantidad}u.</Text>
-                <Text>{item.attributes.precio_unitario}</Text>
+              <Flex 
+                key={index} 
+                justify="space-between" 
+                bg={index % 2 === 0 ? 'white' : 'gray.200'}
+                p={2}
+                borderRadius="md"
+              >
+                <Text fontSize="sm" w="50%">{item?.attributes?.articulo?.data?.attributes?.nombre} /{item?.attributes?.valor?.data?.attributes?.nombre}</Text>
+                <Text fontSize="sm" >{item?.attributes?.cantidad}u.</Text>
+                <Text fontSize="sm" w="30%">${item?.attributes?.precio_unitario}</Text>
               </Flex>
             ))}
           </VStack>

@@ -13,27 +13,6 @@ const Arrow = (
   </svg>
 );
 
-// const OrderBox = ({ date, orderNumber, total, pedidoArticulos }) => (
-//   <Box bg="white" w="100%" p={4} borderRadius="lg" boxShadow="md" mb={3}>
-//     <Flex justifyContent="space-between" alignItems="center">
-//       <VStack align="start" spacing={1}>
-//         <Box bg="black" color="white" px={2} py={1} borderRadius="full">
-//           <Text fontSize="xs">{date}</Text>
-//         </Box>
-//         <Text fontWeight="medium">Pedido n° {orderNumber}</Text>
-//         <Text fontWeight="bold">Total: $ {total}</Text>
-//         {pedidoArticulos.map((articulo, index) => (
-//           <Text key={index}>
-//             {articulo.attributes.articulo.data.attributes.nombre} - 
-//             {articulo.attributes.cantidad} 
-//             {articulo.attributes.valor.data.attributes.nombre}
-//           </Text>
-//         ))}
-//       </VStack>
-//      <Button as={NavLink} to={`/Pedidos/${orderNumber}`}>{Arrow}</Button> 
-//     </Flex>
-//   </Box>
-// );
 
 export default function Pedidos() {
   const dispatch = useDispatch();
@@ -57,14 +36,14 @@ export default function Pedidos() {
         />
         {status === 'loading' && <Spinner />}
         {status === 'failed' && <Text color="red.500">Error: {error}</Text>}
-        {status === 'succeeded' && historial && historial.length > 0 ? (
+        {status === 'succeeded' && historial && historial?.length > 0 ? (
           historial.map(pedido => (
             <OrderBox 
             key={pedido.id}
-            date={formatDate(pedido.attributes.createdAt)} 
-            orderNumber={pedido.id} 
-            total={pedido.attributes.total}
-            items={pedido.attributes.pedido_articulos.data}
+            date={formatDate(pedido?.attributes?.createdAt)} 
+            orderNumber={pedido?.id} 
+            total={pedido?.attributes?.total}
+            items={pedido?.attributes?.pedido_articulos?.data}
           />
           ))
         ) : status === 'succeeded' ? (

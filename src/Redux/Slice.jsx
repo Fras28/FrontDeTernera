@@ -223,14 +223,25 @@ export const finalizarPedido = createAsyncThunk(
 export const obtenerHistorialPedidos = createAsyncThunk(
   "counter/obtenerHistorial",
   async (_, thunkAPI) => {
-    const { user } = thunkAPI.getState();
+    const { user, token } = thunkAPI.getState();
     try {
       const response = await axios.get(
-        `${API_BASE}/api/pedidos?filters[user][id][$eq]=${user?.id}&populate=pedido_articulos.articulo&populate=pedido_articulos.valor`
+        `${API_BASE}/api/pedidos`,
+        {
+          params: {
+            'filters[user][id][$eq]': user?.id,
+            'filters[estado][$ne]': 'xxxx', // Filtro para excluir pedidos con estado "xxxx"
+            'populate': 'pedido_articulos.articulo,pedido_articulos.valor'
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
       return response.data.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error.message);
+      console.error('Error en obtenerHistorialPedidos:', error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
     }
   }
 );
