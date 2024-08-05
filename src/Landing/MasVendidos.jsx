@@ -16,7 +16,7 @@ const Carousel = () => {
   const valoresArticulos = [];
 
    // Check if CatOfer[0] exists and has sub_categorias
-   if (CatOfer.length > 0 && CatOfer[0]?.sub_categorias) {
+   if (CatOfer?.length > 0 && CatOfer[0]?.sub_categorias) {
     CatOfer[0].sub_categorias.forEach((sub_categoria) => {
       sub_categoria?.articulos?.forEach((articulo) => {
         valoresArticulos.push(articulo);
