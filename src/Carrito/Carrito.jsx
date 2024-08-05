@@ -7,13 +7,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Carousel from "../Landing/MasVendidos";
 import { finalizarPedido, updateCartQuantity } from "../Redux/Slice";
 
-
 export default function Carrito() {
   const scrollRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { pedidoActual } = useSelector(state => state); // Obtén el estado del carrito
+  const { pedidoActual, articulos, valores } = useSelector(state => state);
 
   useEffect(() => {
     if (location.hash) {
@@ -33,10 +32,39 @@ export default function Carrito() {
     dispatch(updateCartQuantity({ articleId, valorId, quantity }));
   };
 
+  const getArticuloNombre = (id) => {
+    const foundArticulo = articulos.find(art => art.id === id);
+    console.log(foundArticulo, id ,"foundArticulo");
+    
+    return foundArticulo ? foundArticulo.nombre : 'Artículo desconocido';
+  };
+
+  const getValorNombre = (id) => {
+    const foundValor = valores.find(val => val.id === id);
+    console.log(foundValor, id, "foundValor");
+    return foundValor ? foundValor.attributes.nombre : 'Valor desconocido';
+  };
+
+  const createWhatsAppMessage = () => {
+    let message = `¡Hola! He realizado un nuevo pedido: Número #${pedidoActual?.id}\n\n`;
+    pedidoActual?.attributes?.pedido_articulos.forEach((product, index) => {
+      const articuloNombre = getArticuloNombre(product?.articleId);
+      const valorNombre = getValorNombre(product?.valorId);
+      message += `${index + 1}. ${articuloNombre} - ${valorNombre}\n`;
+      message += `   Cantidad: ${product.cantidad}, Precio unitario: $${product?.precioFinal}\n`;
+    });
+    message += `\nTotal del pedido: $${pedidoActual?.attributes?.total}`;
+    message += `\n\nNúmero de pedido: #${pedidoActual?.id}`;
+    return message;
+  };
+
   const handleFinalizarPedido = () => {
     if (pedidoActual?.id) {
       dispatch(finalizarPedido(pedidoActual.id)).then(() => {
-        navigate('/ruta-de-confirmacion'); // Redirige a una página de confirmación o similar
+        const phoneNumber = "2915729501"; // Reemplaza con el número de teléfono específico
+        const message = encodeURIComponent(createWhatsAppMessage());
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+        window.open(whatsappUrl, '_blank');
       });
     }
   };
@@ -55,7 +83,7 @@ export default function Carrito() {
               <BagCard
                 key={index}
                 producto={product}
-                onQuantityChange={handleQuantityChange} // Pasar la función de manejo de cantidad
+                onQuantityChange={handleQuantityChange}
               />
             ))}
           </VStack>
@@ -82,9 +110,9 @@ export default function Carrito() {
             color="white"
             fontSize="1rem"
             height="3rem"
-            onClick={handleFinalizarPedido} // Manejo del clic para finalizar el pedido
+            onClick={handleFinalizarPedido}
           >
-            Continuar
+            Finalizar y Contactar por WhatsApp
           </Button>
         </Box>
       </Box>
