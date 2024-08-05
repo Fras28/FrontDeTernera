@@ -84,7 +84,7 @@ const styles = {
   counter:{
     backgroundColor:"red",
     borderRadius:"50%",
-    padding:"1px 6px",
+    padding:"1px 8px",
     color:"white",
     fontWeight:"bold"
   }
