@@ -12,7 +12,7 @@ const initialState = {
   valores: [],
   cart: [],
   pedidos: [],
-  pedidoActual: null,
+  pedidoActual: [],
   historial: [],
   cartTotal: 0,
   status: "idle",
@@ -150,7 +150,7 @@ export const crearPedido = createAsyncThunk(
 export const agregarArticuloPedido = createAsyncThunk(
   "counter/agregarArticuloPedido",
   async (
-    { pedidoId, articuloId, valorId, cantidad, precio, nombre, valor, descuento },
+    { pedidoId, articuloId, valorId, cantidad, precio, nombre, valor },
     thunkAPI
   ) => {
     const { token } = thunkAPI.getState();
@@ -177,7 +177,7 @@ export const agregarArticuloPedido = createAsyncThunk(
 
       // Combine server response with local data
       return {
-        id: response.data.data.id,
+        id: response?.data?.data?.id,
         articleId: articuloId,
         name: nombre,
         price: precio,
@@ -442,10 +442,10 @@ export const counterSlice = createSlice({
         state.user = null;
         state.token = null;
         state.role = null;
-        state.cart = null;
+        state.cart = [];
         state.cartTotal=0;
-        state.pedidoActual = null;
-        state.historial = null;
+        state.pedidoActual = [];
+        state.historial = [];
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.status = "failed";

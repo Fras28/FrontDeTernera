@@ -27,7 +27,7 @@ import { addToCart, agregarArticuloPedido, crearPedido} from "../Redux/Slice";
 export default function DetalleProducto() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { articulos, cart, pedidoActual, user } = useSelector((state) => state);
+  const { articulos, pedidoActual } = useSelector((state) => state);
   const articulo = articulos.find((art) => art.id === parseInt(id));
   // const oferta = categories.filter((cat) => cat.id === 1);
   const scrollRef = useRef(null);
@@ -38,7 +38,7 @@ export default function DetalleProducto() {
   useEffect(() => {
     updateArrowVisibility();
   }, []);
-  console.log(cart, pedidoActual?.attributes?.pedido_articulos ,"cart, pedidoActual")
+  console.log( pedidoActual ,"pedidoActual")
 
 
 
@@ -66,7 +66,7 @@ useEffect(() => {
       setShowLeftArrow(scrollLeft > 0);
       setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
     }
-  };
+  }; 
 
   const handleValorSelect = (valor) => {
     setSelectedValor(valor);
@@ -106,23 +106,23 @@ useEffect(() => {
   };
  
   const handleAddToCart = async () => {
-    if (!selectedValor) {
-      alert('Por favor, seleccione una opción');
+    if (!selectedValor || !selectedValor.attributes) {
+      alert('Por favor, seleccione una opción válida');
       return;
     }
-
+  
     try {
       let pedidoId = pedidoActual ? pedidoActual.id : null;
-
+  
       if (!pedidoId) {
         const resultAction = await dispatch(crearPedido());
-        if (crearPedido.fulfilled.match(resultAction)) {
+        if (crearPedido?.fulfilled?.match(resultAction)) {
           pedidoId = resultAction.payload.id;
         } else {
-          throw new Error(resultAction.error.message);
+          throw new Error(resultAction.error?.message || 'Error al crear el pedido');
         }
       }
-
+  
       const precio = articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000);
       const articuloData = {
         pedidoId,
@@ -131,7 +131,7 @@ useEffect(() => {
         cantidad,
         precio,
       };
-
+  
       const resultAction = await dispatch(agregarArticuloPedido(articuloData));
       
       if (agregarArticuloPedido.fulfilled.match(resultAction)) {
@@ -146,14 +146,14 @@ useEffect(() => {
         }));
         alert('Producto agregado al carrito');
       } else {
-        throw new Error(resultAction.error.message);
+        throw new Error(resultAction.error?.message || 'Error al agregar el artículo al pedido');
       }
     } catch (error) {
-      console.error('Error al agregar al carrito:', error.message);
+      console.error('Error al agregar al carrito:', error);
       alert('Error al agregar al carrito');
     }
   };
-
+  
   const formatPrice = (price) => {
     if (typeof price !== "number") return price;
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
