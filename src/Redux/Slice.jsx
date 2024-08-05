@@ -196,14 +196,16 @@ export const agregarArticuloPedido = createAsyncThunk(
 export const finalizarPedido = createAsyncThunk(
   "counter/finalizarPedido",
   async (pedidoId, thunkAPI) => {
-    const { token,cartTotal } = thunkAPI.getState();
+    const { token, pedidoActual } = thunkAPI.getState();
 
     try {
       const response = await axios.put(
         `${API_BASE}/api/pedidos/${pedidoId}`,
         {
-          estado: "pendiente",
-          total:cartTotal
+          data:{
+            estado: "pendiente",
+            total: pedidoActual?.attributes?.total,
+          }
         },
         {
           headers: {
@@ -234,10 +236,7 @@ export const obtenerHistorialPedidos = createAsyncThunk(
 );
 
 const calculateCartTotal = (cart) => {
-  return cart.reduce(
-    (total, item) => total + item.subtotal,
-    0
-  );
+  return cart.reduce((total, item) => total + item.subtotal, 0);
 };
 
 const calculatePedidoTotal = (pedidoArticulos) => {
@@ -250,24 +249,34 @@ const calculatePedidoTotal = (pedidoArticulos) => {
 export const counterSlice = createSlice({
   name: "counter",
   initialState: {
-    pedidoActual: []
+    pedidoActual: [],
   },
   reducers: {
     addToCart: (state, action) => {
-      const { articleId, name, price, quantity, valor, valorId, precioFinal, descuento } = action.payload;
+      const {
+        articleId,
+        name,
+        price,
+        quantity,
+        valor,
+        valorId,
+        precioFinal,
+        descuento,
+      } = action.payload;
 
       if (!state.pedidoActual) {
         state.pedidoActual = {
           attributes: {
             pedido_articulos: [],
-            total: 0
-          }
+            total: 0,
+          },
         };
       }
 
-      const existingItemIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
-        item => item.articleId === articleId && item.valorId === valorId
-      );
+      const existingItemIndex =
+        state.pedidoActual.attributes.pedido_articulos.findIndex(
+          (item) => item.articleId === articleId && item.valorId === valorId
+        );
 
       const subtotal = quantity * precioFinal;
 
@@ -276,7 +285,7 @@ export const counterSlice = createSlice({
           ...state.pedidoActual.attributes.pedido_articulos[existingItemIndex],
           quantity,
           subtotal,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         };
       } else {
         state.pedidoActual.attributes.pedido_articulos.push({
@@ -289,42 +298,56 @@ export const counterSlice = createSlice({
           precioFinal,
           subtotal,
           descuento,
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
       }
 
-      state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
+      state.pedidoActual.attributes.total = calculateCartTotal(
+        state.pedidoActual.attributes.pedido_articulos
+      );
     },
-    
+
     updateCartQuantity: (state, action) => {
       const { articleId, valorId, quantity } = action.payload;
-      const itemIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
-        item => item.articleId === articleId && item.valorId === valorId
-      );
+      const itemIndex =
+        state.pedidoActual.attributes.pedido_articulos.findIndex(
+          (item) => item.articleId === articleId && item.valorId === valorId
+        );
 
       if (itemIndex !== -1) {
         if (quantity === 0 || quantity === null) {
           // Eliminar el artículo si la cantidad es 0 o null
           state.pedidoActual.attributes.pedido_articulos.splice(itemIndex, 1);
         } else {
-          state.pedidoActual.attributes.pedido_articulos[itemIndex].quantity = quantity;
-          state.pedidoActual.attributes.pedido_articulos[itemIndex].subtotal = quantity * state.pedidoActual.attributes.pedido_articulos[itemIndex].precioFinal;
-          state.pedidoActual.attributes.pedido_articulos[itemIndex].updatedAt = new Date().toISOString();
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].quantity =
+            quantity;
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].subtotal =
+            quantity *
+            state.pedidoActual.attributes.pedido_articulos[itemIndex]
+              .precioFinal;
+          state.pedidoActual.attributes.pedido_articulos[itemIndex].updatedAt =
+            new Date().toISOString();
         }
-        state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
+        state.pedidoActual.attributes.total = calculateCartTotal(
+          state.pedidoActual.attributes.pedido_articulos
+        );
       }
     },
-    
+
     removeFromCart: (state, action) => {
       const { articleId, valorId } = action.payload;
       if (state.pedidoActual) {
-        state.pedidoActual.attributes.pedido_articulos = state.pedidoActual.attributes.pedido_articulos.filter(
-          item => !(item.articleId === articleId && item.valorId === valorId)
+        state.pedidoActual.attributes.pedido_articulos =
+          state.pedidoActual.attributes.pedido_articulos.filter(
+            (item) =>
+              !(item.articleId === articleId && item.valorId === valorId)
+          );
+        state.pedidoActual.attributes.total = calculateCartTotal(
+          state.pedidoActual.attributes.pedido_articulos
         );
-        state.pedidoActual.attributes.total = calculateCartTotal(state.pedidoActual.attributes.pedido_articulos);
       }
     },
-    
+
     clearCart: (state) => {
       if (state.pedidoActual) {
         state.pedidoActual.attributes.pedido_articulos = [];
@@ -433,7 +456,7 @@ export const counterSlice = createSlice({
         state.token = null;
         state.role = null;
         state.cart = [];
-        state.cartTotal=0;
+        state.cartTotal = 0;
         state.pedidoActual = [];
         state.historial = [];
       })
@@ -450,26 +473,35 @@ export const counterSlice = createSlice({
       .addCase(agregarArticuloPedido.fulfilled, (state, action) => {
         if (state.pedidoActual) {
           const newArticulo = action.payload;
-          const existingIndex = state.pedidoActual.attributes.pedido_articulos.findIndex(
-            item => item.articleId === newArticulo.articleId && item.valorId === newArticulo.valorId
-          );
+          const existingIndex =
+            state.pedidoActual.attributes.pedido_articulos.findIndex(
+              (item) =>
+                item.articleId === newArticulo.articleId &&
+                item.valorId === newArticulo.valorId
+            );
 
           if (existingIndex !== -1) {
-            state.pedidoActual.attributes.pedido_articulos[existingIndex] = newArticulo;
+            state.pedidoActual.attributes.pedido_articulos[existingIndex] =
+              newArticulo;
           } else {
             state.pedidoActual.attributes.pedido_articulos.push(newArticulo);
           }
 
-          state.pedidoActual.attributes.total = calculatePedidoTotal(state.pedidoActual.attributes.pedido_articulos);
+          state.pedidoActual.attributes.total = calculatePedidoTotal(
+            state.pedidoActual.attributes.pedido_articulos
+          );
         }
       })
       // Finalizar Pedido
       .addCase(finalizarPedido.fulfilled, (state, action) => {
+        if (!state.historial) {
+            state.historial = []; // Asegurarte de que `historial` siempre es un arreglo
+        }
         state.historial.push(action.payload);
         state.pedidoActual = null;
         state.cart = [];
         state.cartTotal = 0;
-      })
+    })
       // Obtener Historial Pedidos
       .addCase(obtenerHistorialPedidos.fulfilled, (state, action) => {
         state.historial = action.payload;
@@ -486,11 +518,7 @@ export const counterSlice = createSlice({
   },
 });
 
-export const {
-  addToCart,
-  updateCartQuantity,
-  removeFromCart,
-  clearCart,
-} = counterSlice.actions;
+export const { addToCart, updateCartQuantity, removeFromCart, clearCart } =
+  counterSlice.actions;
 
 export default counterSlice.reducer;
