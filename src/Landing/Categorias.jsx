@@ -9,7 +9,7 @@ const API_BASE = process.env.REACT_APP_API_BASE;
 
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const categorias = useSelector((state) => state.allData.categories);
+  const categorias = useSelector((state) => state.categories);
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);

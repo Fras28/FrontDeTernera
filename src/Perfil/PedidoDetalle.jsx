@@ -10,11 +10,11 @@ export default function PedidoDetalle() {
   const scrollRef = useRef(null);
   const { id } = useParams();
   const location = useLocation();
-  const { pedidos } = useSelector(state => state.allData);
+  const { historial } = useSelector(state => state);
   
-  console.log(pedidos, "pedidos");
+  console.log(historial, "pedidos");
   
-  const estePedido = pedidos.find(pedido => pedido.id == id);
+  const estePedido = historial.find(pedido => pedido.id == id);
   console.log(estePedido, "estePedido");
 
   useEffect(() => {

@@ -9,14 +9,14 @@ const Carousel = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const { categories } = useSelector((state) => state.allData);
+  const { categories } = useSelector((state) => state);
   // Obtén todos los artículos de todas las subcategorías
   const CatOfer = categories?.filter((cat) => cat.id === 1);
   // Extrae todos los artículos de las subcategorías filtradas
   const valoresArticulos = [];
 
-  CatOfer[0]?.sub_categorias.forEach((sub_categoria) => {
-    sub_categoria?.articulos.forEach((articulo) => {
+  CatOfer[0]?.sub_categorias?.forEach((sub_categoria) => {
+    sub_categoria?.articulos?.forEach((articulo) => {
       valoresArticulos?.push(articulo);
     });
   });
@@ -92,7 +92,7 @@ const styles = {
     alignItems: "center",
     msOverflowStyle: "none",
     scrollbarWidth: "none",
-    "&::-webkit-scrollbar": {
+    "&::WebkitScrollbar": {
       display: "none",
     },
   },

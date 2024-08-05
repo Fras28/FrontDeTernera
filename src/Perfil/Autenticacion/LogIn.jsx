@@ -25,7 +25,7 @@ export default function LoginCard() {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const toast = useToast();
-  const { status, error } = useSelector((state) => state.allData);
+  const { status, error } = useSelector((state) => state);
   const [loginSuccess, setLoginSuccess] = useState(false);
 
   const handleSubmit = async (e) => {

@@ -1,6 +1,5 @@
-import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
-import React, { useState, useEffect } from "react";
-import { removeFromCart, updateCartQuantity } from "../Redux/Slice";
+import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import imgArt from "../assets/articulos.png"
 

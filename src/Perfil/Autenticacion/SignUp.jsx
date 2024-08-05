@@ -48,7 +48,7 @@ export default function SignupCard() {
 
   const dispatch = useDispatch();
   const toast = useToast();
-  const status = useSelector((state) => state.allData.status);
+  const status = useSelector((state) => state.status);
 
   // Validation functions
   const validateName = (name) => name.trim().length > 0;

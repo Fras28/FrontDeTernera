@@ -11,7 +11,7 @@ import BlackBoxBottom from "./InfoBottomBox";
 
 function Landing() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const categorias = useSelector(state=> state.allData.categories)
+  const categorias = useSelector(state=> state.categories)
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);

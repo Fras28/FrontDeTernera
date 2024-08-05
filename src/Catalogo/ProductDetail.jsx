@@ -22,17 +22,14 @@ import { ArrowBackIcon, ArrowForwardIcon } from "@chakra-ui/icons";
 import genericImg from "../assets/oferta.jpeg";
 import Carousel from "../Landing/MasVendidos";
 import TopNav from "../Landing/logoTop";
-import { addToCart, removeFromCart } from "../Redux/Slice";
+import { addToCart, agregarArticuloPedido, crearPedido} from "../Redux/Slice";
 
 export default function DetalleProducto() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const articulo = useSelector((state) =>
-    state.allData?.articulos?.find((art) => art?.id === parseInt(id))
-  );
-  const { cart, categories } = useSelector((state) => state.allData);
-  const oferta = categories.filter((cat) => cat.id === 1);
-  console.log(oferta[0]?.sub_categorias, "oferta");
+  const { articulos, cart, pedidoActual, user } = useSelector((state) => state);
+  const articulo = articulos.find((art) => art.id === parseInt(id));
+  // const oferta = categories.filter((cat) => cat.id === 1);
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
   const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
@@ -41,16 +38,20 @@ export default function DetalleProducto() {
   useEffect(() => {
     updateArrowVisibility();
   }, []);
+  console.log(cart, pedidoActual?.attributes?.pedido_articulos ,"cart, pedidoActual")
 
-  useEffect(() => {
-    if (selectedValor) {
-      const existingItem = cart?.find(
-        (item) =>
-          item.articleId === articulo.id && item.valorId === selectedValor.id
-      );
-      setCantidad(existingItem ? existingItem.quantity : 0);
-    }
-  }, [selectedValor, articulo, cart]);
+
+
+
+useEffect(() => {
+  if (selectedValor) {
+    const existingItem = pedidoActual?.attributes?.pedido_articulos?.find(
+      (item) =>
+        item.articleId === articulo.id && item.valorId === selectedValor.id
+    );
+    setCantidad(existingItem ? existingItem.quantity : 0);
+  }
+}, [selectedValor, articulo, pedidoActual]);
 
   const scroll = (scrollOffset) => {
     if (scrollRef.current) {
@@ -69,17 +70,25 @@ export default function DetalleProducto() {
 
   const handleValorSelect = (valor) => {
     setSelectedValor(valor);
+    const existingItem = pedidoActual?.attributes?.pedido_articulos?.find(
+      (item) => item.articleId === articulo.id && item.valorId === valor.id
+    );
+    setCantidad(existingItem ? existingItem.quantity : 0);
   };
 
-  const handleRemoveFromCart = () => {
+  const handleQuantityChange = (newQuantity) => {
+    setCantidad(newQuantity);
     if (selectedValor && articulo) {
-      dispatch(
-        removeFromCart({
-          articleId: articulo.id,
-          valorId: selectedValor.id,
-        })
-      );
-      setCantidad(0); // Reinicia la cantidad a 0
+      dispatch(addToCart({
+        articleId: articulo.id,
+        name: articulo.nombre,
+        price: articulo.precioKG,
+        quantity: newQuantity,
+        valor: selectedValor.attributes.nombre,
+        valorId: selectedValor.id,
+        descuento:articulo?.DescPorciento,
+        precioFinal: articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000),
+      }));
     }
   };
 
@@ -88,34 +97,60 @@ export default function DetalleProducto() {
     if (cantidad > 0) {
       const newQuantity = cantidad - 1;
       if (newQuantity === 0) {
-        handleRemoveFromCart(); // Eliminar del carrito si la cantidad llega a 0
-      } else {
+        setCantidad(newQuantity);// Eliminar del carrito si la cantidad llega a 0
+      } 
+      else {
         setCantidad(newQuantity);
       }
     }
   };
-  const handleAddToCart = () => {
-    if (selectedValor && articulo) {
-      if (cantidad > 0) {
-        const discountedPrice = articulo.DescPorciento
-          ? calculateDiscountedPrice(articulo.precioKG, articulo.DescPorciento)
-          : articulo.precioKG;
+ 
+  const handleAddToCart = async () => {
+    if (!selectedValor) {
+      alert('Por favor, seleccione una opción');
+      return;
+    }
 
-        dispatch(
-          addToCart({
-            articleId: articulo.id,
-            name: articulo.nombre,
-            price: discountedPrice, // Use discounted price
-            quantity: cantidad,
-            valor: selectedValor.attributes.nombre,
-            valorId: selectedValor.id,
-            precioFinal: discountedPrice * selectedValor.attributes.GrsPorcion,
-            discountPercentage: articulo.DescPorciento || 0,
-          })
-        );
-      } else {
-        handleRemoveFromCart();
+    try {
+      let pedidoId = pedidoActual ? pedidoActual.id : null;
+
+      if (!pedidoId) {
+        const resultAction = await dispatch(crearPedido());
+        if (crearPedido.fulfilled.match(resultAction)) {
+          pedidoId = resultAction.payload.id;
+        } else {
+          throw new Error(resultAction.error.message);
+        }
       }
+
+      const precio = articulo.precioKG * (selectedValor.attributes.GrsPorcion / 1000);
+      const articuloData = {
+        pedidoId,
+        articuloId: articulo.id,
+        valorId: selectedValor.id,
+        cantidad,
+        precio,
+      };
+
+      const resultAction = await dispatch(agregarArticuloPedido(articuloData));
+      
+      if (agregarArticuloPedido.fulfilled.match(resultAction)) {
+        dispatch(addToCart({
+          articleId: articulo.id,
+          name: articulo.nombre,
+          price: articulo.precioKG,
+          quantity: cantidad,
+          valor: selectedValor.attributes.nombre,
+          valorId: selectedValor.id,
+          precioFinal: precio,
+        }));
+        alert('Producto agregado al carrito');
+      } else {
+        throw new Error(resultAction.error.message);
+      }
+    } catch (error) {
+      console.error('Error al agregar al carrito:', error.message);
+      alert('Error al agregar al carrito');
     }
   };
 
@@ -356,75 +391,57 @@ export default function DetalleProducto() {
             display={"flex"}
             gap={"1rem"}
           >
-            <Flex
-              justify="center"
-              alignItems="center"
-              mb={4}
-              overflow="hidden"
-              borderRadius="full"
-              width="200px"
-              height="50px"
-              bg="black"
-              color="white"
-            >
-              <Button
-                onClick={decrementarCantidad}
-                bg="black"
-                color="white"
-                borderRadius="none"
-                height="100%"
-                width="33%"
-                _hover={{ bg: "gray.800" }}
-                _active={{ bg: "gray.700" }}
-              >
-                -
-              </Button>
-              <Box
-                width="34%"
-                bg="white"
-                height="100%"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-                border="solid black 2px"
-              >
-                <Text fontSize="lg" color="black" fontWeight="bold">
-                  {cantidad}
-                </Text>
-              </Box>
-              <Button
-                onClick={incrementarCantidad}
-                bg="black"
-                color="white"
-                borderRadius="none"
-                height="100%"
-                width="33%"
-                _hover={{ bg: "gray.800" }}
-                _active={{ bg: "gray.700" }}
-              >
-                +
-              </Button>
-            </Flex>
-            <Button
-              rounded="none"
-              w="full"
-              size="lg"
-              py="7"
-              bg="#CA0017"
-              borderRadius="24px"
-              textTransform="uppercase"
-              color="white"
-              fontWeight="bold"
-              fontSize="1rem"
-              zIndex={"9999"}
-              _hover={{
-                transform: "translateY(2px)",
-                boxShadow: "lg",
-              }}
-              onClick={handleAddToCart}
-            >
-              Agregar al carrito
-            </Button>
+        <Flex alignItems="center" justifyContent="space-between" borderRadius="full" width="200px" height="50px" bg="black" color="white" overflow="hidden">
+      <Button
+        onClick={decrementarCantidad}
+        bg="black"
+        color="white"
+        borderRadius="none"
+        height="100%"
+        width="33%"
+        _hover={{ bg: "gray.800" }}
+        _active={{ bg: "gray.700" }}
+      >
+        -
+      </Button>
+      <Box width="34%" bg="white" height="100%" display="flex" alignItems="center" justifyContent="center" border="solid black 2px">
+        <Text fontSize="lg" color="black" fontWeight="bold">
+          {cantidad}
+        </Text>
+      </Box>
+      <Button
+        onClick={incrementarCantidad}
+        bg="black"
+        color="white"
+        borderRadius="none"
+        height="100%"
+        width="33%"
+        _hover={{ bg: "gray.800" }}
+        _active={{ bg: "gray.700" }}
+      >
+        +
+      </Button>
+    </Flex>
+      <Button
+        rounded="none"
+        w="full"
+        size="lg"
+        py="7"
+        bg="#CA0017"
+        borderRadius="24px"
+        textTransform="uppercase"
+        color="white"
+        fontWeight="bold"
+        fontSize="1rem"
+        zIndex={"9999"}
+        _hover={{
+          transform: "translateY(2px)",
+          boxShadow: "lg",
+        }}
+        onClick={handleAddToCart}
+      >
+        Agregar al carrito
+      </Button>
           </Box>
         )}
       </Container>
