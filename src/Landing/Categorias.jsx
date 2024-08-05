@@ -18,7 +18,7 @@ const Categorias = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const categoriasOrdenadas = [...categorias].sort((a, b) => a.id - b.id);
+  const categoriasOrdenadas = [...categorias]?.sort((a, b) => a.id - b.id);
 
   return (
     <div style={styles.container}>
