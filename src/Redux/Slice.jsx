@@ -250,17 +250,7 @@ const calculatePedidoTotal = (pedidoArticulos) => {
 export const counterSlice = createSlice({
   name: "counter",
   initialState: {
-    pedidoActual: {
-      id: 24,
-      attributes: {
-        createdAt: '2024-08-04T18:29:45.490Z',
-        updatedAt: '2024-08-04T18:29:45.490Z',
-        publishedAt: '2024-08-04T18:29:45.487Z',
-        total: 63750,
-        estado: 'xxxx',
-        pedido_articulos: []
-      }
-    }
+    pedidoActual: []
   },
   reducers: {
     addToCart: (state, action) => {
