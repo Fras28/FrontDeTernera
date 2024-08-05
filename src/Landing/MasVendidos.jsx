@@ -15,11 +15,15 @@ const Carousel = () => {
   // Extrae todos los artículos de las subcategorías filtradas
   const valoresArticulos = [];
 
-  CatOfer[0]?.sub_categorias?.forEach((sub_categoria) => {
-    sub_categoria?.articulos?.forEach((articulo) => {
-      valoresArticulos?.push(articulo);
+   // Check if CatOfer[0] exists and has sub_categorias
+   if (CatOfer.length > 0 && CatOfer[0]?.sub_categorias) {
+    CatOfer[0].sub_categorias.forEach((sub_categoria) => {
+      sub_categoria?.articulos?.forEach((articulo) => {
+        valoresArticulos.push(articulo);
+      });
     });
-  });
+  }
+
   const scroll = (scrollOffset) => {
     scrollRef.current.scrollLeft += scrollOffset;
     updateArrowVisibility();

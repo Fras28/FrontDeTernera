@@ -5,11 +5,10 @@ import { Box, Button } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
-const API_BASE = process.env.REACT_APP_API_BASE;
-
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const {categories} = useSelector((state) => state);
+  const { categories } = useSelector((state) => state);
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -18,7 +17,11 @@ const Categorias = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const categoriasOrdenadas = [...categories]?.sort((a, b) => a.id - b.id);
+
+  // Ensure categories is defined and is an array
+  const categoriasOrdenadas = Array.isArray(categories)
+    ? [...categories].sort((a, b) => a.id - b.id)
+    : [];
 
   return (
     <div style={styles.container}>
