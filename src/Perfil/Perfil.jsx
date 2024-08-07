@@ -43,19 +43,18 @@ const handleLogOut = ()=>{
       minH={'100vh'}
       align={'center'}
       justify={'center'}
-      bg={useColorModeValue('gray.50', 'gray.800')}
       display={"flex"}
       flexDir={"column"}
       padding={"1rem"}
       justifyContent={"flex-start"}
       gap={"1.5rem"}
+    
       >
     <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"} showBackButton={true} />
 { !user ?
 
     <LogInBtn/> :
       <VStack w={"100%"}>
-
         <Button as={NavLink} to={"/PersonalData"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Datos personales {Arrow}</Button>
         <Button as={NavLink} to={"/Pedidos"} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Pedidos {Arrow}</Button>
         <Button onClick={handleLogOut} border={"solid black 2px"} width="100%" display={"flex"} justifyContent={"space-between"} borderRadius={"24px"} height={"70px"}>Log Out <CloseIcon/></Button>

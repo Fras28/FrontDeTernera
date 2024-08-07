@@ -14,10 +14,9 @@ const ProductCard = ({ product }) => {
     return price * (1 - discount / 100);
   };
 
-
-
   return (
     <Box className="card" position="relative">
+      <VStack spacing={0} alignItems={"flex-start"}>
       {product?.DescPorciento != null && product?.DescPorciento !== 0 && (
         <Box
           position="absolute"
@@ -39,15 +38,22 @@ const ProductCard = ({ product }) => {
         <img src={carnde} alt="carnde" width="100%" loading="Lazy" />
       </Box>
       <Box className="title">
-        <Text>{product?.nombre}</Text>
+        <Text marginBottom=".25rem">{product?.nombre}</Text>
       </Box>
-      <Box className="price">
+      <Box className="price" >
         {product?.DescPorciento != null && product?.DescPorciento !== 0 ? (
           <VStack alignItems="left" gap={1}>
             <Text color="#318215" fontWeight="bold">
-              ${formatPrice(calculateDiscountedPrice(Number(product?.precioKG), product?.DescPorciento))} /Kg
+              $
+              {formatPrice(
+                calculateDiscountedPrice(
+                  Number(product?.precioKG),
+                  product?.DescPorciento
+                )
+              )}{" "}
+              /Kg
             </Text>
-            <Text as="s" fontSize="xs" color="gray.500" >
+            <Text as="s" fontSize="xs" color="gray.500">
               ${formatPrice(Number(product?.precioKG))} /Kg
             </Text>
           </VStack>
@@ -55,6 +61,7 @@ const ProductCard = ({ product }) => {
           <Text>${formatPrice(Number(product?.precioKG))} /Kg</Text>
         )}
       </Box>
+      </VStack>
       <Flex className="action">
         <Button
           as={NavLink}

@@ -30,13 +30,13 @@ function Layout({child}) {
 export default Layout;
 
 const styles = {
-  contaiiner: { paddingBottom: "60px" },
+  container: { paddingBottom: "60px" },
   container2: {
     display: "flex",
     flexDirection: "column",
-  
     paddingBottom:"80px",
     overflow:"hidden"
+
   },
   hero: {
     display: "flex",

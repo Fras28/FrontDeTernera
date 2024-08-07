@@ -11,6 +11,10 @@ import {
   VStack,
   Text,
   InputRightElement,
+  HStack,
+  Stack,
+  Grid,
+  border,
 } from "@chakra-ui/react";
 import imgBack from "../assets/HeroBack.png";
 import {
@@ -29,6 +33,7 @@ import Oferta from "../assets/CatOfer.png";
 import Pollo from "../assets/CatPollo.png";
 import Cerdo from "../assets/CatCerdo.png";
 import Achuras from "../assets/CatAchuras.jpg";
+import { color } from "framer-motion";
 
 const categoryImages = {
   "Productos en Ofertas": Oferta,
@@ -165,15 +170,15 @@ const CatalogoCompleto = ({ categori }) => {
   const renderSearchResults = () => (
     <VStack spacing={4} width="100%">
       <Heading size="lg">Resultados de búsqueda</Heading>
-      {filteredItems.length > 0 ? (
-        filteredItems?.map((item, index) => (
-          <Box key={item?.id} p={4} borderWidth={1} borderRadius="md">
-            <ProductCard key={index} product={item} />
-          </Box>
-        ))
-      ) : (
-        <p>No se encontro ningun articulo con esas caracteristicas</p>
-      )}
+      <Grid gridTemplateColumns={"1fr 1fr"} gridGap={".5rem"}>
+        {filteredItems.length > 0 ? (
+          filteredItems?.map((item) => (
+            <ProductCard key={item?.id} product={item} />
+          ))
+        ) : (
+          <p>No se encontro ningun articulo con esas caracteristicas</p>
+        )}
+      </Grid>
     </VStack>
   );
 
@@ -182,7 +187,7 @@ const CatalogoCompleto = ({ categori }) => {
   };
 
   const catalogFull = (
-    <VStack spacing={4} width="100%">
+    <VStack spacing={0} width="100%" padding={"0 .5rem"}>
       <Box
         position="relative"
         overflow="hidden"
@@ -261,24 +266,22 @@ const CatalogoCompleto = ({ categori }) => {
               borderRadius="full"
               size="sm"
             >
-              <Icon as={ArrowForwardIcon} boxSize={4} color="gray.500" />
+              <Icon as={ArrowForwardIcon} boxSize={4} color="black" />
             </Button>
           )}
         </Flex>
       </Box>
-      <InputGroup bgColor={"#F2F2F2"}>
+      <InputGroup style={styles.input}>
         <InputLeftElement pointerEvents="none">
-          <Search2Icon color="gray.500" />
+          <Search2Icon />
         </InputLeftElement>
         <Input
           placeholder="Buscar producto"
-          sx={styles.input}
-          _focus={{ borderColor: "blue.500" }}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <InputRightElement onClick={() => setSearchTerm("")} cursor="pointer">
-          <SmallCloseIcon color="gray.500" />
+          <SmallCloseIcon />
         </InputRightElement>
       </InputGroup>
       {searchTerm
@@ -292,6 +295,7 @@ const CatalogoCompleto = ({ categori }) => {
                 textAlign="left"
                 marginLeft="1rem"
                 paddingTop="1rem"
+                lineHeight="2rem"
               >
                 {(() => {
                   const categoriaNombre = Cat?.nombre || ""; // Asegúrate de que la cadena no sea undefined
@@ -403,17 +407,19 @@ const CatalogoCompleto = ({ categori }) => {
           )}
         </Flex>
       </Box> */}
-      <InputGroup bgColor={"#F2F2F2"}>
+      <InputGroup sx={styles.inputGroup}>
         <InputLeftElement pointerEvents="none">
-          <Search2Icon color="gray.500" />
+          <Search2Icon />
         </InputLeftElement>
         <Input
-          placeholder="Buscar producto"
           sx={styles.input}
-          _focus={{ borderColor: "blue.500" }}
+          placeholder="Buscar producto"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <InputRightElement onClick={() => setSearchTerm("")} cursor="pointer">
+          <SmallCloseIcon />
+        </InputRightElement>
       </InputGroup>
       {searchTerm
         ? renderSearchResults()
@@ -440,13 +446,21 @@ const CatalogoCompleto = ({ categori }) => {
 };
 
 const styles = {
-  input: {
-    border: "2px solid transparent",
-    borderRadius: "md",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  inputGroup: {
     transition: "all 0.2s ease-in-out",
-    _hover: {
-      borderColor: "blue.500",
+    borderRadius: "12px",
+    border: "0",
+    boxShadow: "none",
+    bgColor: "#F2F2F2",
+    borderColor: "none",
+  },
+  input: {
+    color: "black",
+    _focus: {
+      borderColor: "black",
+    },
+    _focusVisible: {
+      boxShadow: "0 0 0 1px black",
     },
   },
 };

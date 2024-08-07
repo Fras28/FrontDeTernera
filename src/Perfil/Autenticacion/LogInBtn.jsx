@@ -20,7 +20,7 @@ export default LogInBtn;
 
 
 const styles = {
-  borderRadius:"16px",
+  borderRadius:"24px",
   backgroundColor :"#CA0017",
   color:"white",
   width:"328px",

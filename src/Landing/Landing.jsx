@@ -8,6 +8,7 @@ import Carousel from "./MasVendidos";
 import FirtsInfo from "./FirstInfo";
 import { useSelector } from "react-redux";
 import BlackBoxBottom from "./InfoBottomBox";
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 function Landing() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -54,7 +55,8 @@ const styles = {
     alignItems: "center",
     padding: "1rem",
     paddingBottom:"80px",
-    overflow:"hidden"
+    overflow:"hidden",
+
   },
   hero: {
     display: "flex",
