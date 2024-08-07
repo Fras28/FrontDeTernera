@@ -52,7 +52,7 @@ useEffect(() => {
       (item) =>
         item.articleId === articulo.id && item.valorId === selectedValor.id
     );
-    setCantidad(existingItem ? existingItem.quantity : 0);
+    setCantidad(existingItem ? existingItem.quantity : 1);
   }
 }, [selectedValor, articulo, pedidoActual]);
 
