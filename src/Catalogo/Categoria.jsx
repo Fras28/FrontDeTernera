@@ -14,11 +14,10 @@ export default function CategoryComponent({Categoria}) {
       <Box mb={6} display="flex">
         <Heading
           color="black"
-          fontSize="4xl"
+          fontSize="1.2rem"
           fontWeight="bold"
-
           textAlign="left"
-          marginLeft="1rem"
+          paddingLeft="1rem"
         >
           {Categoria?.nombre}
         </Heading>

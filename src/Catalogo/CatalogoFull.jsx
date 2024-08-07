@@ -186,7 +186,7 @@ const CatalogoCompleto = ({ categori }) => {
       <Box
         position="relative"
         overflow="hidden"
-        borderRadius="lg"
+        borderRadius="24px"
         width="100%"
         height="48"
         backgroundImage={`url(${imgBack})`}
@@ -199,9 +199,15 @@ const CatalogoCompleto = ({ categori }) => {
           backgroundColor="rgba(0, 0, 0, 0.5)"
           display="flex"
           alignItems="center"
-          justifyContent="center"
+          justifyContent="left"
+          padding={"1.5rem"}
         >
-          <Box color="white" fontSize="28px" fontWeight="bold">
+          <Box
+            color="white"
+            fontSize="40px"
+            fontWeight="bold"
+            textAlign={"left"}
+          >
             CATÁLOGO COMPLETO
           </Box>
         </Box>
@@ -283,10 +289,16 @@ const CatalogoCompleto = ({ categori }) => {
                 color="black"
                 fontSize="4xl"
                 fontWeight="bold"
-                textAlign="center"
+                textAlign="left"
                 marginLeft="1rem"
+                paddingTop="1rem"
               >
-                {Cat?.nombre}
+                {(() => {
+                  const categoriaNombre = Cat?.nombre || ""; // Asegúrate de que la cadena no sea undefined
+                  const words = categoriaNombre.trim().split(/\s+/); // Divide la cadena en palabras
+                  const ultimaPalabra = words[words.length - 1]; // Devuelve la última palabra
+                  return ultimaPalabra;
+                })()}
               </Heading>
               {Cat.sub_categorias?.map((subCat) => (
                 <CategoryComponent
