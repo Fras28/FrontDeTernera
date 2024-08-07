@@ -33,7 +33,7 @@ export default function DetalleProducto() {
   // const oferta = categories.filter((cat) => cat.id === 1);
   const scrollRef = useRef(null);
   const [selectedValor, setSelectedValor] = useState(null);
-  const [cantidad, setCantidad] = useState(0); // Estado para la cantidad
+  const [cantidad, setCantidad] = useState(1); // Estado para la cantidad
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   useEffect(() => {

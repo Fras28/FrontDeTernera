@@ -16,7 +16,7 @@ const PersonalDataForm = () => {
         <BlackBox
           showBackButton={true}
           titulo="Datos personales"
-          info="Estos son los datos que usaremos a la ora de facturar y enviar tu pedido"
+          info="Estos son los datos que usaremos a la hora de facturar y enviar tu pedido"
         />
 
       <form
