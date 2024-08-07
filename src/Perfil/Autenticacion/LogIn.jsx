@@ -95,12 +95,13 @@ export default function LoginCard() {
               size="lg"
               width="full"
               isLoading={status === "loading"}
+              style={styles.button}
             >
               Acceder
             </Button>
           </VStack>
         </form>
-        <SignInBtn />
+        {/* <SignInBtn /> */}
         <Text align="center">
           ¿No tienes cuenta? <Link as={RouterLink} to="/signup" color="red.500">Regístrate</Link>
         </Text>
@@ -114,5 +115,12 @@ const styles = {
     borderRadius: "24px",
     backgroundColor: "#F2F2F2",
     width: "100%"
+  },
+  button:{
+    borderRadius:"16px",
+    backgroundColor :"#CA0017",
+    color:"white",
+    width:"100%",
+    padding:"12px 24px"
   }
 };

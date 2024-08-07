@@ -19,7 +19,7 @@ import {
   InputGroup,
   InputRightElement,
 } from '@chakra-ui/react';
-import { CheckIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { CheckIcon,  SmallCloseIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { registerUser } from '../../Redux/Slice';
 import BlackBox from '../../Landing/InfoTopBox';
 
@@ -41,10 +41,10 @@ export default function SignupCard() {
   const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
   const [passwordErrors, setPasswordErrors] = useState({
     length: true,
-    special: true,
     uppercase: true,
     number: true
   });
+  const [showPasswordValidation, setShowPasswordValidation] = useState(false);
 
   const dispatch = useDispatch();
   const toast = useToast();
@@ -53,15 +53,20 @@ export default function SignupCard() {
   // Validation functions
   const validateName = (name) => name.trim().length > 0;
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const validatePassword = (password) => {
-    const errors = {
-      length: password.length >= 8 && password.length <= 16,
-      special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-      uppercase: /[A-Z]/.test(password),
-      number: /\d/.test(password)
-    };
-    setPasswordErrors(errors);
-    return Object.values(errors).every(Boolean);
+const validatePassword = (password) => {
+    if (password.length >= 3) {
+      const errors = {
+        length: password.length >= 8 && password.length <= 16,
+        uppercase: /[A-Z]/.test(password),
+        number: /\d/.test(password)
+      };
+      setPasswordErrors(errors);
+      setShowPasswordValidation(true);
+      return Object.values(errors).every(Boolean);
+    } else {
+      setShowPasswordValidation(false);
+      return false;
+    }
   };
 
   // Effect for real-time validation
@@ -162,39 +167,37 @@ export default function SignupCard() {
               {!isEmailValid && <FormErrorMessage>Ingrese un email válido</FormErrorMessage>}
             </FormControl>
             <FormControl id="password" isRequired isInvalid={!isPasswordValid}>
-              <FormLabel>Contraseña</FormLabel>
-              <InputGroup>
-                <Input
-                  style={{...styles.Input, borderColor: !isPasswordValid ? 'red' : undefined}}
-                  type={showPassword ? "text" : "password"}
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <InputRightElement width="4.5rem">
-                  <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <List spacing={2} mt={2} fontSize="sm" color="gray.600">
-                <ListItem>
-                  <ListIcon as={CheckIcon} color={passwordErrors.length ? "green.500" : "red.500"} />
-                  Debe tener entre 8-16 caracteres.
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={CheckIcon} color={passwordErrors.special ? "green.500" : "red.500"} />
-                  Debe tener al menos un carácter especial (*, #, $, %, &, etc).
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={CheckIcon} color={passwordErrors.uppercase ? "green.500" : "red.500"} />
-                  Debe tener al menos una mayúscula.
-                </ListItem>
-                <ListItem>
-                  <ListIcon as={CheckIcon} color={passwordErrors.number ? "green.500" : "red.500"} />
-                  Debe tener al menos un número.
-                </ListItem>
-              </List>
-            </FormControl>
+          <FormLabel>Contraseña</FormLabel>
+          <InputGroup>
+            <Input
+              style={{...styles.Input, borderColor: !isPasswordValid ? 'red' : undefined}}
+              type={showPassword ? "text" : "password"}
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <InputRightElement width="4.5rem">
+              <Button h="1.75rem" size="sm" onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? <ViewOffIcon /> : <ViewIcon />}
+              </Button>
+            </InputRightElement>
+          </InputGroup>
+          {showPasswordValidation && (
+            <List spacing={2} mt={2} fontSize="sm" color="gray.600">
+              <ListItem>
+                <ListIcon as={passwordErrors.length ? CheckIcon : SmallCloseIcon} color={passwordErrors.length ? "green.500" : "red.500"} />
+                Debe tener entre 8-16 caracteres.
+              </ListItem>
+              <ListItem>
+                <ListIcon as={passwordErrors.uppercase ? CheckIcon : SmallCloseIcon} color={passwordErrors.uppercase ? "green.500" : "red.500"} />
+                Debe tener al menos una mayúscula.
+              </ListItem>
+              <ListItem>
+                <ListIcon as={passwordErrors.number ? CheckIcon : SmallCloseIcon} color={passwordErrors.number ? "green.500" : "red.500"} />
+                Debe tener al menos un número.
+              </ListItem>
+            </List>
+          )}
+        </FormControl>
             <FormControl id="confirmPassword" isRequired isInvalid={!isConfirmPasswordValid}>
               <FormLabel>Repetí la contraseña</FormLabel>
               <InputGroup>
@@ -217,6 +220,7 @@ export default function SignupCard() {
               colorScheme="red"
               size="lg"
               width="full"
+              style={styles.button}
               isLoading={status === 'loading'}
               isDisabled={!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid || !firstName || !lastName || !email || !password || !confirmPassword}
             >
@@ -237,5 +241,13 @@ const styles = {
     borderRadius: "24px",
     backgroundColor: "#F2F2F2",
     width: "100%"
+  },
+  button:{
+    borderRadius:"16px",
+    backgroundColor :"#CA0017",
+    color:"white",
+    width:"100%",
+    padding:"12px 24px"
   }
+
 };

@@ -1,8 +1,15 @@
 import React from "react";
 import BlackBox from "../Landing/InfoTopBox";
 import { Input } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
 
 const PersonalDataForm = () => {
+  const user = useSelector(state => state.user)
+  console.log(user,"user");
+  const userx = user.username.split(" ")
+
+  
+  
   return (
 
       <div className="flex items-center mb-6" style={{margin:"1rem"}}>
@@ -17,15 +24,15 @@ const PersonalDataForm = () => {
         style={{ display: "flex", flexDirection: "column", gap:"1rem", marginTop:"1rem" }}
       >
         <label htmlFor="" style={styles.label}>Nombre</label>
-        <Input type="text"  style={styles.input}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
+        <Input type="text"  style={styles.input} value={user?.username}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
         <label htmlFor="" style={styles.label}>Apellido</label>
-        <Input type="text"  style={styles.input}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
+        <Input type="text"  style={styles.input} value={user?.apellido} _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
         <label htmlFor="" style={styles.label}>Dirección de entrega</label>
-        <Input type="text" style={styles.input}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }} />
+        <Input type="text" style={styles.input} value={user?.direccion} _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }} />
         <label htmlFor="" style={styles.label}>Telefono</label>
-        <Input type="text"  style={styles.input}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
+        <Input type="text"  style={styles.input} value={user?.telefono}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
         <label htmlFor="" style={styles.label}>Correo electrónico</label>
-        <Input type="text" style={styles.input}   _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
+        <Input type="text" style={styles.input} value={user?.email}  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px blue.500' }}/>
       </form>
     </div>
   );

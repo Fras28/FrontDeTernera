@@ -7,7 +7,7 @@ const SignInBtn = () => {
     <Button
       as={RouterLink}
       to="/Signup"
-      colorScheme="blue"
+     style={styles}
     >
       Registrarte
     </Button>
@@ -15,3 +15,10 @@ const SignInBtn = () => {
 };
 
 export default SignInBtn;
+const styles = {
+  borderRadius:"16px",
+  backgroundColor :"#CA0017",
+  color:"white",
+  width:"100%",
+  padding:"12px 24px"
+}

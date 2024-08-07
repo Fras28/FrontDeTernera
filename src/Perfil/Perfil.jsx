@@ -50,7 +50,7 @@ const handleLogOut = ()=>{
       justifyContent={"flex-start"}
       gap={"1.5rem"}
       >
-    <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"}  />
+    <BlackBox titulo={"Mi Perfil"} info={"Podrás ver el estado de tus pedidos y gestionar tu información personal"} showBackButton={true} />
 { !user ?
 
     <LogInBtn/> :
@@ -68,38 +68,3 @@ const handleLogOut = ()=>{
   );
 }
 
-{/* <Stack
-  spacing={4}
-  w={'full'}
-  maxW={'md'}
-  bg={useColorModeValue('white', 'gray.700')}
-  rounded={'xl'}
-  boxShadow={'lg'}
-  p={6}
-  my={12}>
-  <Center>
-    <Avatar size="xl" src="https://bit.ly/sage-adebayo">
-      <AvatarBadge
-        as={IconButton}
-        size="sm"
-        rounded="full"
-        top="-10px"
-        colorScheme="red"
-        aria-label="remove Image"
-        icon={<SmallCloseIcon />}
-      />
-    </Avatar>
-  </Center>
-  <Heading lineHeight={1.1} fontSize={{ base: '2xl', sm: '3xl' }}>
-    John Doe
-  </Heading>
-  <Text fontSize="lg" color="gray.600">
-    john.doe@example.com
-  </Text>
-  <Text fontSize="lg" color="gray.600">
-    +1234567890
-  </Text>
-  <Text fontSize="lg" color="gray.600">
-    123 Main St, City, Country
-  </Text>
-</Stack> */}

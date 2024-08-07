@@ -4,6 +4,21 @@ import logo from "../assets/LogoDeTernera.png";
 import { Box, Button } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
+import Carne from "../assets/CatCarne.png"
+import Oferta from "../assets/CatOfer.png"
+import Pollo from "../assets/CatPollo.png"
+import Cerdo from "../assets/CatCerdo.png"
+import Achuras from "../assets/CatAchuras.jpg"
+
+
+
+const categoryImages = {
+  "Productos en Ofertas": Oferta,
+  "Productos De Ternera": Carne,
+  "Productos de Pollo": Pollo,
+  "Productos de Cerdo": Cerdo,
+  "Achuras": Achuras,
+};
 
 const Categorias = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -13,15 +28,18 @@ const Categorias = () => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Ensure categories is defined and is an array
+  // Asegurarse de que categories es un array y ordenarlo
   const categoriasOrdenadas = Array.isArray(categories)
     ? [...categories].sort((a, b) => a.id - b.id)
     : [];
+
+  const getCategoryImage = (categoryName) => {
+    return categoryImages[categoryName] || logo;
+  };
 
   return (
     <div style={styles.container}>
@@ -37,7 +55,10 @@ const Categorias = () => {
             as={NavLink}
             to={`/${categoria.nombre}`}
             key={categoria.id}
-            style={{ ...styles.card, backgroundImage: `url(${oferta})` }}
+            style={{
+              ...styles.card,
+              backgroundImage: `url(${getCategoryImage(categoria.nombre)})`,
+            }}
           >
             <Button style={styles.Button}>
               <h3 style={styles.title}>{categoria.nombre}</h3>
@@ -49,6 +70,7 @@ const Categorias = () => {
   );
 };
 
+
 const styles = {
   container: {
     justifyItems: "center",
@@ -59,7 +81,6 @@ const styles = {
     backgroundImage: `url(${logo})`,
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
-    filter: "drop-shadow(5px 5px 10px #000000)",
     gap: "1rem",
     justifyItems: "center",
   },
@@ -74,7 +95,6 @@ const styles = {
     color: "white",
     fontSize: "1.5rem",
     fontWeight: "bold",
-    textShadow: "2px 2px 4px rgba(0, 0, 0, 0.8)",
     borderRadius: "24px",
     padding: ".5rem",
     minWidth: "300px",

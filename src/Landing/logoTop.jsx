@@ -44,7 +44,7 @@ const TopNav = ({showBackButton = false}) => {
           <NavLink to="/"> {Logo} </NavLink>
           </div>
           <div  style={styles.contCarr}>
-          {user? <p>Hola,{user.username?.split(" ")[0]}!</p>:null }
+          {/* {user? <p>Hola,{user.username?.split(" ")[0]}!</p>:null } */}
           <div style={styles.cartInfo}>
             <NavLink to="/carrito">{carrito}</NavLink>
             <span style={styles.counter}>{totalQuantity?totalQuantity:0 }</span>
