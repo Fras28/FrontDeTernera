@@ -39,7 +39,7 @@ const Carousel = () => {
 
   return (
     <Box position="relative" maxW={"100dvw"}>
-      <Heading style={styles.h1}>Ofertas !</Heading>
+      <Heading style={styles.h1}>Ofertas</Heading>
       <Flex position="relative">
         {showLeftArrow && (
           <Button

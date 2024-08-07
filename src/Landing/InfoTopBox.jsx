@@ -11,7 +11,7 @@ const BlackBox = ({ titulo, info, showBackButton = false }) => {
   };
 
   return (
-    <Box bg="black" color="white" p={4} borderRadius="24px" maxWidth="md" mx="auto" minH="150px" marginTop="1rem" >
+    <Box bg="black" color="white" p={4} borderRadius="24px" maxWidth="md" mx="auto" minH="150px" >
       <VStack align="stretch" spacing={2} padding="1rem">
         {showBackButton && (
           <Button 

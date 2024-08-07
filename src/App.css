@@ -46,7 +46,7 @@
 }
 
 .css-57i9nt {
-  margin-top: 1rem !important;
+  margin-top: 0.5rem !important;
 }
 
 .css-1u2cvaz{
@@ -55,3 +55,8 @@
   top: 20% !important;
 }
 
+
+.css-3dtahj{
+  border-radius: "12px" !important;
+  border-color: "none" !important;
+}

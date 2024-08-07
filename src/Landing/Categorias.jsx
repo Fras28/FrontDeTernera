@@ -9,6 +9,7 @@ import Oferta from "../assets/CatOfer.png"
 import Pollo from "../assets/CatPollo.png"
 import Cerdo from "../assets/CatCerdo.png"
 import Achuras from "../assets/CatAchuras.jpg"
+import { width } from "@fortawesome/free-solid-svg-icons/fa0";
 
 
 
@@ -73,8 +74,9 @@ const Categorias = () => {
 
 const styles = {
   container: {
-    justifyItems: "center",
+    // justifyItems: "center",
     marginBottom: "2rem",
+    width:"100%"
   },
   container2: {
     display: "flex",
@@ -98,6 +100,7 @@ const styles = {
     borderRadius: "24px",
     padding: ".5rem",
     minWidth: "300px",
+    width:"100%"
   },
   title: {
     textAlign: "flex-end",

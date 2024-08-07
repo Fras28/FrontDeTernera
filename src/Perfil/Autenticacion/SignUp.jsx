@@ -221,6 +221,7 @@ const validatePassword = (password) => {
               size="lg"
               width="full"
               style={styles.button}
+              
               isLoading={status === 'loading'}
               isDisabled={!isFirstNameValid || !isLastNameValid || !isEmailValid || !isPasswordValid || !isConfirmPasswordValid || !firstName || !lastName || !email || !password || !confirmPassword}
             >
@@ -243,7 +244,7 @@ const styles = {
     width: "100%"
   },
   button:{
-    borderRadius:"16px",
+    borderRadius:"24px",
     backgroundColor :"#CA0017",
     color:"white",
     width:"100%",

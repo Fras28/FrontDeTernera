@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, SimpleGrid, Heading } from "@chakra-ui/react";
+import { Box, SimpleGrid, Heading, Grid } from "@chakra-ui/react";
 import ProductCard from '../Landing/cardProd';
 
 
@@ -11,22 +11,24 @@ import ProductCard from '../Landing/cardProd';
 export default function CategoryComponent({Categoria}) {
   return (
     <Box my={1}>
-      <Box mb={6} display="flex">
+      <Box display="flex">
         <Heading
           color="black"
           fontSize="1.2rem"
           fontWeight="bold"
           textAlign="left"
           paddingLeft="1rem"
+          margin=".5rem 0"
         >
           {Categoria?.nombre}
         </Heading>
       </Box>
-      <SimpleGrid columns={[2, null, 3, 4]} spacing={4}>
+      <Grid gridTemplateColumns={"1fr 1fr"} gridGap={".5rem"}>
         {Categoria?.articulos?.map((categor, index) => (
           <ProductCard key={index} product={categor} />
         ))}
-      </SimpleGrid>
+      </Grid>
     </Box>
+
   );
 }
