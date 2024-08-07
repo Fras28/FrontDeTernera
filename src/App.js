@@ -41,7 +41,7 @@ function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/Login" element={<SimpleCard />} />
           <Route path="/Signup" element={<SignupCard />} />
-          <Route path="/Exito" element={<Exito />} />
+          <Route path="/Exito/:id" element={<Exito />} />
           <Route path="/error" element={<Error />} />
           <Route path="/notfound" element={<NotFound />} />
           <Route path="/UserProfile" element={<UserProfile />} />

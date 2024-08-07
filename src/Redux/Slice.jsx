@@ -199,13 +199,13 @@ export const finalizarPedido = createAsyncThunk(
     const { token, pedidoActual } = thunkAPI.getState();
 
     try {
-      const response = await axios.put(
+      await axios.put(
         `${API_BASE}/api/pedidos/${pedidoId}`,
         {
-          data:{
+          data: {
             estado: "pendiente",
             total: pedidoActual?.attributes?.total,
-          }
+          },
         },
         {
           headers: {
@@ -213,12 +213,101 @@ export const finalizarPedido = createAsyncThunk(
           },
         }
       );
-      return response.data;
+      // Refetch the order history after updating the order status
+      await thunkAPI.dispatch(obtenerHistorialPedidos());
     } catch (error) {
       return thunkAPI.rejectWithValue(error.message);
     }
   }
 );
+
+
+
+
+export const ProcesoPedidoAdmin = createAsyncThunk(
+  "counter/procesoPedidoAdmin",
+  async (pedidoId, thunkAPI) => {
+    const { token, pedidoActual } = thunkAPI.getState();
+
+    try {
+      await axios.put(
+        `${API_BASE}/api/pedidos/${pedidoId}`,
+        {
+          data: {
+            estado: "en_proceso",
+            total: pedidoActual?.attributes?.total,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Refetch the order history after updating the order status
+      await thunkAPI.dispatch(obtenerHistorialPedidos());
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const PedidoCompletAdmin = createAsyncThunk(
+  "counter/pedidoCompletAdmin",
+  async (pedidoId, thunkAPI) => {
+    const { token, pedidoActual } = thunkAPI.getState();
+
+    try {
+      await axios.put(
+        `${API_BASE}/api/pedidos/${pedidoId}`,
+        {
+          data: {
+            estado: "finalizado",
+            total: pedidoActual?.attributes?.total,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Refetch the order history after updating the order status
+      await thunkAPI.dispatch(obtenerHistorialPedidos());
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
+export const PedidoCanceladoAdmin = createAsyncThunk(
+  "counter/pedidoCanceladoAdmin",
+  async (pedidoId, thunkAPI) => {
+    const { token, pedidoActual } = thunkAPI.getState();
+
+    try {
+      await axios.put(
+        `${API_BASE}/api/pedidos/${pedidoId}`,
+        {
+          data: {
+            estado: "cancelado",
+            total: pedidoActual?.attributes?.total,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Refetch the order history after updating the order status
+      await thunkAPI.dispatch(obtenerHistorialPedidos());
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 
 export const obtenerHistorialPedidos = createAsyncThunk(
   "counter/obtenerHistorial",
@@ -245,6 +334,28 @@ export const obtenerHistorialPedidos = createAsyncThunk(
     }
   }
 );
+
+export const obtenerTodosPedidos = createAsyncThunk(
+  "counter/obtenerHistorial",
+  async (_, thunkAPI) => {
+    const {  token } = thunkAPI.getState();
+    try {
+      const response = await axios.get(
+        `${API_BASE}/api/pedidos`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error('Error en obtenerHistorialPedidos:', error.response?.data || error.message);
+      return thunkAPI.rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 
 const calculateCartTotal = (cart) => {
   return cart.reduce((total, item) => total + item.subtotal, 0);

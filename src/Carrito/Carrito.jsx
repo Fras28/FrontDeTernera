@@ -60,8 +60,18 @@ export default function Carrito() {
 
   const handleFinalizarPedido = () => {
     if (pedidoActual?.id) {
-      dispatch(finalizarPedido(pedidoActual.id)).then(() => {
-        const phoneNumber = "2915729501"; // Reemplaza con el número de teléfono específico
+      dispatch(finalizarPedido(pedidoActual.id)).then((result) => {
+        if (result.meta.requestStatus === 'fulfilled') {
+          // If the order was successfully finalized, redirect to PedidoExitoso
+          navigate(`/Exito/${pedidoActual?.id}`);
+        } else {
+          // If there was an error, you might want to show an error message
+          console.error('Error al finalizar el pedido');
+          // Optionally, you can show an error message to the user here
+        }
+        
+        // Create and open WhatsApp message
+        const phoneNumber = "2915729501";
         const message = encodeURIComponent(createWhatsAppMessage());
         const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
         window.open(whatsappUrl, '_blank');

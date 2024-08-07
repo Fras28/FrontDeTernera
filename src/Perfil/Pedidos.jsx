@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import { Box, Text, VStack, Flex, ChakraProvider, Button, Spinner } from "@chakra-ui/react";
+import React, { useState, useEffect } from "react";
+import { Box, Text, VStack, Flex, ChakraProvider, Button, Spinner, HStack } from "@chakra-ui/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import BlackBox from "../Landing/InfoTopBox";
 import { NavLink } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchPedidosUser, obtenerHistorialPedidos } from "../Redux/Slice";
+import { obtenerHistorialPedidos, obtenerTodosPedidos } from "../Redux/Slice";
 import OrderBox from "./OrderBox";
 
 const Arrow = (
@@ -13,21 +13,59 @@ const Arrow = (
   </svg>
 );
 
+const orderPriority = {
+  "pendiente": 1,
+  "en_proceso": 2,
+  "finalizado": 3,
+  "cancelado": 4
+};
 
 export default function Pedidos() {
   const dispatch = useDispatch();
   const { historial, user, status, error } = useSelector(state => state);
+  const [selectedStatus, setSelectedStatus] = useState("todos");
+
   useEffect(() => {
-    dispatch(obtenerHistorialPedidos());
-  }, [dispatch]);
+    if (user?.role === "Admin") {
+      dispatch(obtenerTodosPedidos());
+    } else {
+      dispatch(obtenerHistorialPedidos());
+    }
+  }, [dispatch, user?.role]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('es-ES');
   };
 
+  const filteredAndSortedPedidos = React.useMemo(() => {
+    let filtered = historial?.filter(pedido => {
+      if (selectedStatus === "todos") return true;
+      return pedido?.attributes?.estado === selectedStatus;
+    }) || [];
+
+    return filtered.sort((a, b) => {
+      if (selectedStatus === "todos") {
+        return orderPriority[a?.attributes?.estado] - orderPriority[b?.attributes?.estado];
+      }
+      return new Date(b?.attributes?.createdAt) - new Date(a?.attributes?.createdAt);
+    });
+  }, [historial, selectedStatus]);
+
+  const handleStatusChange = (newStatus) => {
+    setSelectedStatus(newStatus);
+  };
+
   return (
-    <ChakraProvider>
+    <ChakraProvider >
+        {user?.role === "Admin" && (
+          <HStack spacing={2} width="100%" style={styles.container}>
+            <Button onClick={() => handleStatusChange("pendiente")} colorScheme={selectedStatus === "pendiente" ? "blue" : "gray"}>Pendientes</Button>
+            <Button onClick={() => handleStatusChange("en_proceso")} colorScheme={selectedStatus === "en_proceso" ? "blue" : "gray"}>En Proceso</Button>
+            <Button onClick={() => handleStatusChange("finalizado")} colorScheme={selectedStatus === "finalizado" ? "blue" : "gray"}>Finalizados</Button>
+            <Button onClick={() => handleStatusChange("cancelado")} colorScheme={selectedStatus === "cancelado" ? "blue" : "gray"}>Cancelados</Button>
+          </HStack>
+        )}
       <VStack spacing={4} p={4} bg="#F5F5F5" minH="100vh">
         <BlackBox
           titulo="Pedidos"
@@ -36,20 +74,37 @@ export default function Pedidos() {
         />
         {status === 'loading' && <Spinner />}
         {status === 'failed' && <Text color="red.500">Error: {error}</Text>}
-        {status === 'succeeded' && historial && historial?.length > 0 ? (
-          historial.map(pedido => (
+        {status === 'succeeded' && filteredAndSortedPedidos.length > 0 ? (
+          filteredAndSortedPedidos.map(pedido => (
             <OrderBox 
-            key={pedido.id}
-            date={formatDate(pedido?.attributes?.createdAt)} 
-            orderNumber={pedido?.id} 
-            total={pedido?.attributes?.total}
-            items={pedido?.attributes?.pedido_articulos?.data}
-          />
+              key={pedido?.id}
+              date={formatDate(pedido?.attributes?.createdAt)} 
+              orderNumber={pedido?.id} 
+              total={pedido?.attributes?.total}
+              items={pedido?.attributes?.pedido_articulos?.data}
+              estado={pedido?.attributes?.estado}
+            />
           ))
         ) : status === 'succeeded' ? (
-          <Text>No hay pedidos disponibles.</Text>
+          <Text>No hay pedidos disponibles para el estado seleccionado.</Text>
         ) : null}
       </VStack>
     </ChakraProvider>
   );
+}
+
+const styles = {
+  container: {
+    width: "100dvw",
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "center",
+    padding: "1rem",
+    backgroundColor: "white",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    position: "fixed",
+    zIndex: 1000, 
+  },
 }

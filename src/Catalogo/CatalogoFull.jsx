@@ -24,6 +24,19 @@ import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import ProductCard from "../Landing/cardProd";
 import Carousel from "../Landing/MasVendidos";
+import Carne from "../assets/CatCarne.png";
+import Oferta from "../assets/CatOfer.png";
+import Pollo from "../assets/CatPollo.png";
+import Cerdo from "../assets/CatCerdo.png";
+import Achuras from "../assets/CatAchuras.jpg";
+
+const categoryImages = {
+  "Productos en Ofertas": Oferta,
+  "Productos De Ternera": Carne,
+  "Productos de Pollo": Pollo,
+  "Productos de Cerdo": Cerdo,
+  Achuras: Achuras,
+};
 
 const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -150,7 +163,7 @@ const CatalogoCompleto = ({ categori }) => {
   }, []);
 
   const renderSearchResults = () => (
-    <VStack spacing={4} width="100%" >
+    <VStack spacing={4} width="100%">
       <Heading size="lg">Resultados de búsqueda</Heading>
       {filteredItems.length > 0 ? (
         filteredItems?.map((item, index) => (
@@ -164,7 +177,9 @@ const CatalogoCompleto = ({ categori }) => {
     </VStack>
   );
 
-  console.log( categori, " categori?.sub_categorias");
+  const getCategoryImage = (categoryName) => {
+    return categoryImages[categoryName];
+  };
 
   const catalogFull = (
     <VStack spacing={4} width="100%">
@@ -245,14 +260,14 @@ const CatalogoCompleto = ({ categori }) => {
           )}
         </Flex>
       </Box>
-      <InputGroup>
+      <InputGroup bgColor={"#F2F2F2"}>
         <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input
           placeholder="Buscar producto"
           sx={styles.input}
-          _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+          _focus={{ borderColor: "blue.500" }}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -268,7 +283,6 @@ const CatalogoCompleto = ({ categori }) => {
                 color="black"
                 fontSize="4xl"
                 fontWeight="bold"
-                textShadow="2px 2px 4px rgba(0,0,0,0.6)"
                 textAlign="center"
                 marginLeft="1rem"
               >
@@ -277,8 +291,8 @@ const CatalogoCompleto = ({ categori }) => {
               {Cat.sub_categorias?.map((subCat) => (
                 <CategoryComponent
                   key={subCat.id}
-                Categoria={subCat}
-                 id={subCat.id}
+                  Categoria={subCat}
+                  id={subCat.id}
                 />
               ))}
             </div>
@@ -287,17 +301,17 @@ const CatalogoCompleto = ({ categori }) => {
   );
 
   const catalogCategoria = (
-    <VStack spacing={4} width="100%" marginTop={"0"} >
+    <VStack spacing={4} width="100%" marginTop={"0"}>
       <Box
         position="relative"
         overflow="hidden"
-        borderRadius="lg"
+        borderRadius="24px"
         width="100%"
-        height="48"
-        backgroundImage={`url(${API_BASE}${categori?.img?.data[0].attributes?.url})`}
+        height="110px"
+        backgroundImage={`url(${getCategoryImage(categori?.nombre)})`}
+        // backgroundImage={`url(${API_BASE}${categori?.img?.data[0].attributes?.url})`}
         backgroundSize="cover"
         backgroundPosition="center"
-  
       >
         <Box
           position="absolute"
@@ -305,14 +319,25 @@ const CatalogoCompleto = ({ categori }) => {
           backgroundColor="rgba(0, 0, 0, 0.5)"
           display="flex"
           alignItems="center"
-          justifyContent="center"
+          justifyContent="left"
+          padding={"1.5rem"}
         >
-          <Box color="white" fontSize="28px" fontWeight="bold">
-            {categori?.nombre}
+          <Box
+            color="white"
+            fontSize="40px"
+            fontWeight="bold"
+            textAlign={"left"}
+          >
+            {(() => {
+              const categoriaNombre = categori?.nombre || ""; // Asegúrate de que la cadena no sea undefined
+              const words = categoriaNombre.trim().split(/\s+/); // Divide la cadena en palabras
+              const ultimaPalabra = words[words.length - 1]; // Devuelve la última palabra
+              return ultimaPalabra;
+            })()}
           </Box>
         </Box>
       </Box>
-      <Box position="relative" maxW="100dvw" mt={4} mb={4}>
+      {/* <Box position="relative" maxW="100dvw" mt={4} mb={4}>
         <Flex position="relative" alignItems="center">
           {showLeftArrow && (
             <Button
@@ -329,27 +354,27 @@ const CatalogoCompleto = ({ categori }) => {
             </Button>
           )}
           <Flex
-          ref={scrollRef}
-          overflowX="scroll"
-          scrollBehavior="smooth"
-          css={{
-            "&::WebkitScrollbar": {
-              display: "none",
-            },
-            scrollbarWidth: "none",
-            "-ms-overflow-style": "none",
-          }}
-          gap={4}
-          px={4}
-        >
-          {categori?.sub_categorias?.map((category) => (
-            <CategoryButton
-              key={category.id}
-              name={category.nombre}
-              id={category.id}
-            />
-          ))}
-        </Flex>
+            ref={scrollRef}
+            overflowX="scroll"
+            scrollBehavior="smooth"
+            css={{
+              "&::WebkitScrollbar": {
+                display: "none",
+              },
+              scrollbarWidth: "none",
+              "-ms-overflow-style": "none",
+            }}
+            gap={4}
+            px={4}
+          >
+            {categori?.sub_categorias?.map((category) => (
+              <CategoryButton
+                key={category.id}
+                name={category.nombre}
+                id={category.id}
+              />
+            ))}
+          </Flex>
           {showRightArrow && (
             <Button
               onClick={() => scrollContainer(200)}
@@ -365,29 +390,27 @@ const CatalogoCompleto = ({ categori }) => {
             </Button>
           )}
         </Flex>
-      </Box>
-      <InputGroup>
+      </Box> */}
+      <InputGroup bgColor={"#F2F2F2"}>
         <InputLeftElement pointerEvents="none">
           <Search2Icon color="gray.500" />
         </InputLeftElement>
         <Input
           placeholder="Buscar producto"
           sx={styles.input}
-          _focus={{ borderColor: "blue.500", boxShadow: "0 0 0 1px blue.500" }}
+          _focus={{ borderColor: "blue.500" }}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </InputGroup>
       {searchTerm
-      ? renderSearchResults()
-      : categori?.sub_categorias?.map((subCat) => (
-          <Box key={subCat.id} id={subCat.id} width="100%">
-            <CategoryComponent
-              Categoria={subCat}
-            />
-          </Box>
+        ? renderSearchResults()
+        : categori?.sub_categorias?.map((subCat) => (
+            <Box key={subCat.id} id={subCat.id} width="100%">
+              <CategoryComponent Categoria={subCat} />
+            </Box>
           ))}
-          <Carousel/>
+      <Carousel />
     </VStack>
   );
 

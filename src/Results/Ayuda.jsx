@@ -23,6 +23,7 @@ export default function Ayuda() {
       flexDir={"column"}
       paddingTop={"2rem"}
       gap={"2rem"}
+      padding={"1rem"}
     >
       <BlackBox
        showBackButton={true}

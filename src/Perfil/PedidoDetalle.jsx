@@ -15,7 +15,7 @@ export default function PedidoDetalle() {
   console.log(historial, "pedidos");
   
   const estePedido = historial.find(pedido => pedido.id == id);
-  console.log(estePedido, "estePedido");
+ 
 
   useEffect(() => {
     if (location.hash) {
