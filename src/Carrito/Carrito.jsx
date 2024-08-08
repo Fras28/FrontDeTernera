@@ -62,19 +62,38 @@ export default function Carrito() {
     if (pedidoActual?.id) {
       dispatch(finalizarPedido(pedidoActual.id)).then((result) => {
         if (result.meta.requestStatus === 'fulfilled') {
-          // If the order was successfully finalized, redirect to PedidoExitoso
-          navigate(`/Exito/${pedidoActual?.id}`);
+          const phoneNumber = "2915729501";
+          const message = encodeURIComponent(createWhatsAppMessage());
+          
+          // Detectar el sistema operativo
+          const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+          const isAndroid = /android/i.test(userAgent);
+          const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+          let whatsappUrl;
+          if (isAndroid) {
+            // URL para Android
+            whatsappUrl = `intent://send?phone=${phoneNumber}&text=${message}#Intent;scheme=whatsapp;package=com.whatsapp;end`;
+          } else if (isIOS) {
+            // URL para iOS
+            whatsappUrl = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+          } else {
+            // URL para navegadores de escritorio
+            whatsappUrl = `https://web.whatsapp.com/send?phone=${phoneNumber}&text=${message}`;
+          }
+
+          // Intentar abrir WhatsApp
+          window.location.href = whatsappUrl;
+
+          // Establecer un temporizador para redirigir a la página de éxito
+          setTimeout(() => {
+            navigate(`/Exito/${pedidoActual?.id}`);
+          }, 1000); // Aumentado a 1 segundo para dar más tiempo a que se abra WhatsApp
+
         } else {
-          // If there was an error, you might want to show an error message
           console.error('Error al finalizar el pedido');
-          // Optionally, you can show an error message to the user here
+          // Aquí podrías mostrar un mensaje de error al usuario
         }
-        
-        // Create and open WhatsApp message
-        const phoneNumber = "2915729501";
-        const message = encodeURIComponent(createWhatsAppMessage());
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-        window.open(whatsappUrl, '_blank');
       });
     }
   };
